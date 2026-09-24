@@ -17,12 +17,7 @@
       --accent: #ff2a2a;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -31,249 +26,102 @@
       overflow-x: hidden;
     }
 
-    /* Навигация */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
       background: rgba(7, 7, 8, 0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
-    .brand {
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      text-transform: lowercase;
-      font-size: 1.15rem;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      list-style: none;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover, .nav-links a.active {
-      color: #fff;
-    }
+    .brand { font-weight: 700; color: #fff; text-decoration: none; font-size: 1.15rem; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; }
+    .nav-links a:hover { color: #fff; }
 
     .contact-btn {
-      background: #18191c;
-      border: 1px solid var(--border);
-      padding: 0.4rem 0.9rem;
-      border-radius: 6px;
-      cursor: pointer;
-      color: #fff;
-      font-family: inherit;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      background: #18191c; border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer;
+      color: #fff; font-family: inherit; font-size: 0.85rem;
     }
+    .contact-btn:hover { background: #252830; }
 
-    .contact-btn:hover {
-      background: #252830;
-      border-color: #444;
-    }
-
-    /* Интро с видео */
     header {
-      padding: 4rem 1.5rem 3rem;
-      text-align: center;
+      padding: 4rem 1.5rem 3rem; text-align: center;
       border-bottom: 1px solid var(--border);
       background: radial-gradient(circle at top, #14161a 0%, var(--bg) 80%);
     }
-
     .video-wrapper {
-      max-width: 500px;
-      margin: 0 auto;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      background: #000;
+      max-width: 500px; margin: 0 auto; border-radius: 8px;
+      overflow: hidden; border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); background: #000;
     }
-
-    .video-wrapper video {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
+    .video-wrapper video { width: 100%; height: auto; display: block; }
     .tagline {
-      margin-top: 1.25rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+      margin-top: 1.25rem; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase;
     }
 
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 3.5rem 1.5rem;
-    }
+    main { max-width: 900px; margin: 0 auto; padding: 3.5rem 1.5rem; }
 
-    /* Блок О НАС */
     .about-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem;
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 2.5rem;
-      align-items: center;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2.5rem; display: grid;
+      grid-template-columns: 1fr 1.2fr; gap: 2.5rem; align-items: center;
       margin-bottom: 3rem;
     }
-
-    @media (max-width: 768px) {
-      .about-card {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 768px) { .about-card { grid-template-columns: 1fr; } }
 
     .bear-box {
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #333;
-      background: #000;
-      position: relative;
+      border-radius: 8px; overflow: hidden; border: 1px solid #333;
+      background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center;
     }
+    .bear-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .bear-box img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .about-content h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: -0.01em;
-    }
-
-    .about-content p {
-      color: #b3b8c2;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      line-height: 1.7;
-    }
-
-    .highlight {
-      color: #fff;
-      font-weight: 600;
-    }
-
+    .about-content h2 { font-size: 1.8rem; margin-bottom: 1.2rem; }
+    .about-content p { color: #b3b8c2; font-size: 1rem; margin-bottom: 1rem; line-height: 1.7; }
+    .highlight { color: #fff; font-weight: 600; }
     .note-badge {
-      display: inline-block;
-      margin-top: 0.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--accent);
-      background: rgba(255, 42, 42, 0.1);
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 42, 42, 0.3);
+      display: inline-block; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--accent); background: rgba(255, 42, 42, 0.1);
+      padding: 0.3rem 0.6rem; border-radius: 4px; border: 1px solid rgba(255, 42, 42, 0.3);
     }
 
-    /* Кнопка перехода к проектам */
-    .cta-box {
-      text-align: center;
-      padding: 2rem 0;
-    }
-
+    .cta-box { text-align: center; padding: 2rem 0; }
     .btn-projects {
-      display: inline-block;
-      background: #fff;
-      color: #000;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 0.9rem 2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: all 0.2s;
+      display: inline-block; background: #fff; color: #000;
+      font-weight: 700; font-size: 1rem; padding: 0.9rem 2rem;
+      border-radius: 8px; text-decoration: none; transition: 0.2s;
     }
-
-    .btn-projects:hover {
-      background: #ccc;
-      transform: translateY(-2px);
-    }
+    .btn-projects:hover { background: #ccc; transform: translateY(-2px); }
 
     /* Модалка контактов */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
-      z-index: 999;
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px);
+      z-index: 999; justify-content: center; align-items: center;
     }
-
     .modal-box {
-      background: #141518;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 2rem;
-      max-width: 420px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+      background: #141518; border: 1px solid #333; border-radius: 12px;
+      padding: 2rem; max-width: 420px; width: 90%; text-align: center;
       position: relative;
     }
-
     .modal-close {
-      position: absolute;
-      top: 1rem; right: 1rem;
-      background: transparent;
-      border: none;
-      color: #777;
-      font-size: 1.5rem;
-      cursor: pointer;
+      position: absolute; top: 1rem; right: 1rem;
+      background: transparent; border: none; color: #777; font-size: 1.5rem; cursor: pointer;
     }
-
     .contact-link {
-      display: block;
-      background: #1e2025;
-      color: #fff;
-      text-decoration: none;
-      padding: 0.8rem;
-      margin: 0.8rem 0;
-      border-radius: 6px;
-      border: 1px solid #2d3038;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      display: block; background: #1e2025; color: #fff;
+      text-decoration: none; padding: 0.8rem; margin: 0.8rem 0;
+      border-radius: 6px; border: 1px solid #2d3038;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
     }
-
-    .contact-link:hover {
-      background: #2a2d36;
-      border-color: #555;
-    }
+    .contact-link:hover { background: #2a2d36; }
 
     footer {
-      border-top: 1px solid var(--border);
-      padding: 3rem 1.5rem;
-      text-align: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--text-dim);
+      border-top: 1px solid var(--border); padding: 3rem 1.5rem;
+      text-align: center; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--text-dim);
     }
   </style>
 </head>
@@ -300,7 +148,8 @@
   <main>
     <section class="about-card">
       <div class="bear-box">
-        <img src="https://media1.tenor.com/m/Zp9wz4Z5h3gAAAAC/danganronpa-monokuma.gif" alt="Монокума работает" />
+        <!-- Положи файл monokuma.png прямо в репозиторий -->
+        <img src="monokuma.png" alt="Монокума" onerror="this.onerror=null; this.src='monokuma.jpg';" />
       </div>
 
       <div class="about-content">
@@ -325,15 +174,13 @@
     </div>
   </main>
 
-  <div class="modal-overlay" id="contactModal" onclick="closeModal(event)">
+  <div class="modal-overlay" id="contactModal" onclick="closeModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModal()">×</button>
       <h3 style="margin-bottom: 0.5rem;">Связь с нами</h3>
-      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">По вопросам коллабораций, съемок и предложений</p>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">По вопросам коллабораций и съемок</p>
       
-      <a href="https://t.me/твой_ник" target="_blank" class="contact-link">Telegram // @канал_или_лс</a>
-      <a href="https://vk.com/твой_паблик" target="_blank" class="contact-link">VK // Группа студии</a>
-      <a href="mailto:contact@damninteractive.ru" class="contact-link">Почта: contact@damninteractive.ru</a>
+      <a href="mailto:contact@damninteractive.ru" class="contact-link">contact@damninteractive.ru</a>
     </div>
   </div>
 
@@ -342,12 +189,8 @@
   </footer>
 
   <script>
-    function openModal() {
-      document.getElementById('contactModal').style.display = 'flex';
-    }
-    function closeModal() {
-      document.getElementById('contactModal').style.display = 'none';
-    }
+    function openModal() { document.getElementById('contactModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('contactModal').style.display = 'none'; }
   </script>
 </body>
 </html>
