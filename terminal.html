@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DAMN-OS // SECURE TERMINAL</title>
+  <title>DAMN-OS // CRT TERMINAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,158 +13,170 @@
     html, body {
       height: 100%;
       height: 100dvh;
-      background-color: #000;
-      color: #ccc;
+      background-color: #030403;
+      color: #33ff66;
       font-family: 'JetBrains Mono', monospace;
       position: relative;
       overflow: hidden;
       user-select: none;
     }
 
-    /* Эффект ЭЛТ-монитора */
-    body::before {
-      content: " ";
+    /* АНАЛОГОВЫЙ ЭЛТ-ЭФФЕКТ (Сканлайны + мерцание) */
+    .crt-overlay {
       position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: 
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
       background-size: 100% 3px, 6px 100%;
       pointer-events: none;
       z-index: 999;
+    }
+
+    /* Выпуклость экрана и тень кинескопа */
+    .crt-vignette {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(0, 20, 5, 0.8);
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    /* Свечение зелёного люминофора */
+    .glow {
+      text-shadow: 0 0 6px rgba(51, 255, 102, 0.65), 0 0 12px rgba(51, 255, 102, 0.3);
     }
 
     /* 1. ЭКРАН ВЫКЛЮЧЕННОГО ПК */
     #powerScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: #020202;
+      background: #010201;
       z-index: 100;
       display: flex;
     }
     .monitor-dark {
       flex: 1;
-      background: #020202;
+      background: radial-gradient(circle at center, #050a06 0%, #000 80%);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #333;
+      color: #1a3320;
       font-size: 0.8rem;
       text-align: center;
       padding: 1rem;
     }
     .pc-case {
-      width: 100px;
-      background: #111;
-      border-left: 2px solid #222;
-      box-shadow: inset 5px 0 15px rgba(0,0,0,0.8);
+      width: 90px;
+      background: #0f1011;
+      border-left: 2px solid #1c1e21;
+      box-shadow: inset 6px 0 18px rgba(0,0,0,0.9);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
     @media (max-width: 600px) {
       .pc-case { width: 75px; }
       .monitor-dark { display: none; }
     }
 
-    .power-btn-wrapper { text-align: center; }
     .power-btn {
-      width: 48px; height: 48px;
+      width: 46px; height: 46px;
       border-radius: 50%;
-      background: #0a0a0a;
-      border: 2px solid #333;
-      box-shadow: inset 0 0 10px #000, 0 4px 5px rgba(0,0,0,0.5);
+      background: #08090a;
+      border: 2px solid #2a2c30;
+      box-shadow: inset 0 0 10px #000, 0 4px 6px rgba(0,0,0,0.6);
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      color: #555;
-      font-size: 1.4rem;
+      color: #444;
+      font-size: 1.3rem;
       transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
     .power-btn:hover, .power-btn:active {
-      border-color: #777;
+      border-color: #666;
       color: #ff2a2a;
       text-shadow: 0 0 8px #ff2a2a;
-      box-shadow: inset 0 0 10px #000, 0 0 15px rgba(255, 42, 42, 0.4);
+      box-shadow: inset 0 0 10px #000, 0 0 16px rgba(255, 42, 42, 0.5);
     }
-    .btn-label { margin-top: 10px; font-size: 0.65rem; color: #666; letter-spacing: 2px; }
+    .btn-label { margin-top: 10px; font-size: 0.6rem; color: #555; letter-spacing: 2px; }
 
-    /* 2. ЭКРАН POST-ЗАГРУЗКИ */
+    /* 2. POST ЗАГРУЗКА */
     #bootScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background: #000;
       z-index: 50;
-      padding: 1rem;
+      padding: 1.2rem;
       display: none;
-      font-size: 0.8rem;
-      line-height: 1.4;
-      color: #bbb;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: #aaa;
       overflow-y: auto;
     }
-    .boot-line { margin-bottom: 0.2rem; word-break: break-all; }
+    .boot-line { margin-bottom: 0.25rem; }
 
     .asus-logo-box {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      border: 2px solid #3a4b66;
-      background: #060a12;
-      padding: 6px 10px;
+      top: 1.2rem; right: 1.2rem;
+      border: 2px solid #2a3a55;
+      background: #040810;
+      padding: 8px 12px;
       text-align: center;
     }
     .asus-logo-title {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: 3px;
       color: #fff;
       font-family: sans-serif;
-      border-bottom: 1px solid #3a4b66;
+      border-bottom: 1px solid #2a3a55;
       padding-bottom: 2px;
       margin-bottom: 2px;
     }
-    .asus-logo-sub { font-size: 0.45rem; color: #8da2c4; }
+    .asus-logo-sub { font-size: 0.45rem; color: #7d94b8; }
 
     #qtePrompt {
       display: none;
       position: fixed;
-      bottom: 1.5rem;
+      bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
-      background: #1a0505;
-      border: 1px solid #ff2a2a;
-      color: #ff5555;
-      padding: 0.6rem 1rem;
-      font-size: 0.75rem;
+      background: rgba(40, 5, 5, 0.85);
+      border: 1px solid #ff3333;
+      color: #ff6666;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.8rem;
       cursor: pointer;
       animation: blink 0.4s infinite alternate;
       border-radius: 4px;
       text-align: center;
       width: 90%;
-      max-width: 360px;
+      max-width: 380px;
       z-index: 80;
     }
-    @keyframes blink { from { opacity: 0.6; } to { opacity: 1; } }
+    @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
 
-    /* 3. СИНИЙ BIOS SETUP */
+    /* 3. BIOS SETUP */
     #biosScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: #0000aa;
+      background: #000099;
       color: #ffffff;
       z-index: 60;
       padding: 1rem;
       display: none;
       flex-direction: column;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       overflow-y: auto;
     }
     .bios-header {
       background: #aaaaaa;
-      color: #0000aa;
+      color: #000099;
       text-align: center;
       font-weight: bold;
-      padding: 2px;
+      padding: 3px;
       margin-bottom: 0.8rem;
     }
     .bios-grid {
@@ -177,7 +189,7 @@
     }
     .bios-section h3 {
       color: #ffff55;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       border-bottom: 1px dashed #aaaaaa;
       padding-bottom: 4px;
       margin-bottom: 0.6rem;
@@ -186,132 +198,115 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 0.35rem;
-      font-size: 0.75rem;
     }
     .bios-val { color: #ffff55; }
     .bios-footer {
       background: #aaaaaa;
-      color: #0000aa;
+      color: #000099;
       padding: 6px;
       margin-top: 0.8rem;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .btn-exit-bios {
-      background: #0000aa;
+      background: #000099;
       color: #fff;
       border: 1px solid #fff;
-      padding: 4px 8px;
+      padding: 4px 10px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.75rem;
     }
 
-    /* 4. ОСНОВНОЙ ТЕРМИНАЛ DAMN-OS */
+    /* 4. CRT ТЕРМИНАЛ DAMN-OS */
     #terminalScreen {
       display: none;
       flex-direction: column;
       height: 100%;
       height: 100dvh;
-      padding: 1rem;
-      background: #050608;
-      color: #00ff66;
+      padding: 1.2rem;
+      background: radial-gradient(circle at center, #07150a 0%, #020603 100%);
       opacity: 0;
       transition: opacity 0.4s ease-in;
     }
+
     .term-header {
       border-bottom: 1px solid #005522;
       padding-bottom: 0.6rem;
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      color: #008833;
-      font-size: 0.75rem;
+      color: #1a8838;
+      font-size: 0.78rem;
     }
-    .term-btn-exit {
-      background: transparent;
-      border: 1px solid #005522;
-      color: #00ff66;
-      padding: 2px 6px;
-      font-family: inherit;
-      font-size: 0.7rem;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    .term-btn-exit:hover { background: #002211; }
 
     .output {
       flex: 1;
       overflow-y: auto;
-      line-height: 1.5;
-      font-size: 0.85rem;
+      line-height: 1.6;
+      font-size: 0.92rem;
       word-break: break-word;
-      padding-right: 4px;
+      padding-right: 6px;
       -webkit-overflow-scrolling: touch;
     }
-    .line { margin-bottom: 0.4rem; }
-    .dim { color: #007733; }
-    .alert { color: #ff2a2a; }
-    .gold { color: #f5a623; }
-    .white { color: #fff; }
+    .line { margin-bottom: 0.45rem; }
+    .dim { color: #1a7732; }
+    .alert { color: #ff3333; text-shadow: 0 0 8px rgba(255, 51, 51, 0.6); }
+    .gold { color: #ffcc00; text-shadow: 0 0 8px rgba(255, 204, 0, 0.4); }
+    .white { color: #e6ffe6; text-shadow: 0 0 6px rgba(230, 255, 230, 0.5); }
 
     .input-row {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.6rem;
-      border-top: 1px solid #003311;
-      padding-top: 0.6rem;
-      background: #050608;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      border-top: 1px solid #00441a;
+      padding-top: 0.8rem;
     }
-    .prompt { color: #00ff66; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+    .prompt {
+      color: #33ff66;
+      font-weight: bold;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
     #cmdInput {
       background: transparent;
       border: none;
-      color: #fff;
+      color: #e6ffe6;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       flex: 1;
       outline: none;
       min-width: 0;
-    }
-    .btn-submit-mobile {
-      background: #003311;
-      border: 1px solid #00ff66;
-      color: #00ff66;
-      font-family: inherit;
-      font-size: 0.75rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 4px;
-      cursor: pointer;
-      display: none;
-    }
-    @media (max-width: 768px) {
-      .btn-submit-mobile { display: block; }
+      text-shadow: 0 0 6px rgba(51, 255, 102, 0.6);
+      caret-color: #33ff66;
     }
 
     .term-footer-links {
       display: flex;
       justify-content: space-between;
-      margin-top: 0.5rem;
-      font-size: 0.7rem;
-      color: #006622;
+      margin-top: 0.6rem;
+      font-size: 0.72rem;
+      color: #1a5526;
     }
-    .term-footer-links a { color: #007733; text-decoration: none; }
-    .term-footer-links a:hover { color: #00ff66; }
+    .term-footer-links a { color: #1a7732; text-decoration: none; }
+    .term-footer-links a:hover { color: #33ff66; }
   </style>
 </head>
-<body>
+<body class="glow">
+
+  <!-- Фильтры стеклянного кинескопа ЭЛТ -->
+  <div class="crt-overlay"></div>
+  <div class="crt-vignette"></div>
 
   <!-- 1. Экран выключенного ПК -->
   <div id="powerScreen">
     <div class="monitor-dark">
       <div>
-        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🖥️</div>
-        СИСТЕМА ОТКЛЮЧЕНА.<br>НАЖМИТЕ КНОПКУ ПИТАНИЯ СПРАВА.
+        <div style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4;">⚡</div>
+        CRT TERMINAL OFFLINE<br>
+        <span style="font-size: 0.7rem; color: #122416;">[ НАЖМИТЕ КНОПКУ ПИТАНИЯ ]</span>
       </div>
     </div>
     <div class="pc-case">
@@ -356,16 +351,16 @@
     </div>
   </div>
 
-  <!-- 4. Основной терминал DAMN-OS -->
+  <!-- 4. Основной ЭЛТ-терминал DAMN-OS -->
   <div id="terminalScreen">
     <div class="term-header">
       <span>DAMN INTERACTIVE // OS v0.21.4</span>
-      <button class="term-btn-exit" onclick="exitToSite()">[ ВЫХОД ]</button>
+      <span>NODE: SCHOOL_SECTOR_01</span>
     </div>
 
     <div class="output" id="termOutput">
       <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
-      <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
+      <div class="line dim">// КАНАЛ СВЯЗИ АКТИВЕН. КИНЕСКОП ПРОГРЕТ.</div>
       <div class="line">----------------------------------------------------</div>
       <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
       <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
@@ -374,14 +369,13 @@
     </div>
 
     <div class="input-row">
-      <span class="prompt">&gt;</span>
-      <input type="text" id="cmdInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="команда..." />
-      <button class="btn-submit-mobile" onclick="handleCommand()">Ввод</button>
+      <span class="prompt">root@damn-crt:~$</span>
+      <input type="text" id="cmdInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     </div>
 
     <div class="term-footer-links">
-      <span>NODE: SCHOOL_SECTOR_01</span>
-      <a href="index.html" onclick="exitToSite(); return false;">[ ВЕРНУТЬСЯ НА САЙТ ]</a>
+      <span>CRT LUMINOPHOR: 520nm</span>
+      <a href="index.html" onclick="exitToSite(); return false;">[ EXIT_TO_MAIN ]</a>
     </div>
   </div>
 
@@ -405,7 +399,7 @@
       window.location.href = "index.html";
     }
 
-    // Звук спикера
+    // Системный писк спикера
     function playBeep() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -541,7 +535,7 @@
       }, 600);
     }
 
-    /* РАСШИРЕННЫЙ СПИСОК КОМАНД */
+    /* КОМАНДЫ ТЕРМИНАЛА */
     const commands = {
       help: `
 <span class="gold">СИСТЕМНЫЕ КОМАНДЫ:</span>
@@ -553,10 +547,10 @@
   <span class="gold">vk</span>         - Ссылка на официальное сообщество
   <span class="gold">whoami</span>     - Кто авторизован в системе
   <span class="gold">date</span>       - Системное время узла
-  <span class="gold">matrix</span>     - Запуск матрицы данных
+  <span class="gold">matrix</span>     - Запуск потока данных
   <span class="gold">reboot</span>     - Перезагрузка системы
-  <span class="gold">clear</span>      - Очистить терминал
-  <span class="gold">exit</span>       - Выход на главный сайт
+  <span class="gold">clear</span>      - Очистить экран
+  <span class="gold">exit</span>       - Выход на сайт
   <span class="alert">[КОД]</span>      - Ввод найденного шифра (21, cleaner, school...)
 `,
       status: `
@@ -564,7 +558,7 @@
 • Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Redmi Note 10 Pro)
 • Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // 4 часа)
 • Project 21: В ПРОИЗВОДСТВЕ // Хронометраж: 2-3 мин // Ставка: СМЕРТЬ
-• Локации: Школьный комплекс и улица перед входом
+• Локации: Школьный комплекс и прилегающая территория
 `,
       creators: `
 [ДОСТУП К ДОСЬЕ]
@@ -572,8 +566,8 @@
 • mixp1ezz  - Полевой исполнитель, тактика, динамика в кадре
 `,
       gear: `
-[СЕКУЩИЙ СЕКТОР СНАБЖЕНИЯ]
-• iPhone 17 White (Основной боевой аппарат)
+[СЕКТОР СНАБЖЕНИЯ]
+• iPhone 17 White (Основной аппарат)
 • DJI Osmo Mobile 8P (Взят в августе 2026 // Ждёт Project 21)
 • Redmi Note 10 Pro (В Зале Почёта)
 `,
@@ -581,20 +575,19 @@
 [КАТАЛОГ СТУДИИ]
 1. «Уборщик» (2026) — Слэшер / Мистика
 2. «Уборщик 2: Страшно вырубай» (2026) — Психологический триллер
-3. «Project 21» (2026) — Саспенс / Карточная дуэль с циркуляркой
+3. «Project 21» (2026) — Саспенс / Дуэль с циркуляркой
 `,
       vk: `
-Официальный паблик студии: <a href="https://vk.ru/damninteractive" target="_blank" style="color: #00aaff;">vk.ru/damninteractive</a>
+Паблик студии: <a href="https://vk.ru/damninteractive" target="_blank" style="color: #33ff66; text-decoration: underline;">vk.ru/damninteractive</a>
 `,
       whoami: `
 Пользователь: guest_node_user
 Уровень допуска: RESTRICTED // ARG_PARTICIPANT
-IP-шлюз: SCHOOL_WIFI_INTERNAL
+Шлюз: SCHOOL_WIFI_INTERNAL
 `,
       date: `
 Системная дата узла: ${new Date().toLocaleString('ru-RU')}
 `,
-      // СЕКРЕТНЫЕ КОДЫ ДЛЯ КВЕСТА
       "21": `
 <span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 [PROJECT 21] <<<</span>
 "Никаких мелких ставок. Никаких пальцев. 
@@ -627,28 +620,28 @@ IP-шлюз: SCHOOL_WIFI_INTERNAL
       const matrixInt = setInterval(() => {
         let chars = "01DAMNINTERACTIVE21XYZ_#!?";
         let str = "";
-        for (let j = 0; j < 35; j++) {
+        for (let j = 0; j < 32; j++) {
           str += chars.charAt(Math.floor(Math.random() * chars.length)) + " ";
         }
-        printLine(`<span style="color: #00aa44; font-size: 0.75rem;">${str}</span>`);
+        printLine(`<span style="color: #1a8838; font-size: 0.75rem;">${str}</span>`);
         count++;
-        if (count > 12) {
+        if (count > 10) {
           clearInterval(matrixInt);
           printLine('<span class="white">// ПОТОК СИНХРОНИЗИРОВАН.</span>');
         }
-      }, 80);
+      }, 70);
     }
 
     function handleCommand() {
       const val = cmdInput.value.trim().toLowerCase();
       if (!val) return;
 
-      printLine(`<span class="prompt">&gt;</span> <span class="white">${cmdInput.value}</span>`);
+      printLine(`<span class="prompt">root@damn-crt:~$</span> <span class="white">${cmdInput.value}</span>`);
 
       if (val === 'clear') {
         output.innerHTML = '';
       } else if (val === 'exit' || val === 'quit') {
-        printLine('<span class="dim">// ВЫХОД В ОБЩИЙ ДОСТУП...</span>');
+        printLine('<span class="dim">// ОТКЛЮЧЕНИЕ ТЕРМИНАЛА...</span>');
         setTimeout(exitToSite, 500);
       } else if (val === 'reboot' || val === 'restart') {
         location.reload();
@@ -671,7 +664,7 @@ IP-шлюз: SCHOOL_WIFI_INTERNAL
     });
 
     document.addEventListener('click', (e) => {
-      if (terminalScreen.style.display === 'flex' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+      if (terminalScreen.style.display === 'flex' && e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
         cmdInput.focus();
       }
     });
