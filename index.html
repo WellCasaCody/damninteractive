@@ -118,14 +118,14 @@
       position: absolute; top: 1rem; right: 1rem;
       background: transparent; border: none; color: #777; font-size: 1.5rem; cursor: pointer;
     }
-    .contact-link {
-      display: block; background: #1e2025; color: #fff;
-      text-decoration: none; padding: 0.9rem; margin-top: 1rem;
+    .contact-copy-box {
+      background: #1e2025; color: #fff;
+      padding: 1rem; margin-top: 1.2rem;
       border-radius: 6px; border: 1px solid #2d3038;
       font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
-      transition: all 0.2s;
+      cursor: pointer; transition: all 0.2s;
     }
-    .contact-link:hover { background: #2a2d36; border-color: #555; }
+    .contact-copy-box:hover { background: #2a2d36; border-color: #555; }
 
     footer {
       border-top: 1px solid var(--border); padding: 3rem 1.5rem;
@@ -136,14 +136,17 @@
 </head>
 <body>
 
+  <!-- Навигация -->
   <nav>
     <a href="index.html" class="brand">damn interactive</a>
     <ul class="nav-links">
       <li><a href="projects.html">Фильмы и проекты</a></li>
+      <li><a href="gear.html">Сетап</a></li>
       <li><button class="contact-btn" onclick="openModal()">Контакты</button></li>
     </ul>
   </nav>
 
+  <!-- Интро с видео -->
   <header>
     <div class="video-wrapper">
       <video id="introVideo" autoplay loop muted playsinline preload="auto">
@@ -156,6 +159,7 @@
   </header>
 
   <main>
+    <!-- Биография и Монокума -->
     <section class="about-card">
       <div class="bear-box">
         <img src="monokuma.png" alt="Монокума" onerror="this.onerror=null; this.src='monokuma.jpg';" />
@@ -178,18 +182,23 @@
       </div>
     </section>
 
+    <!-- Переход к каталогу -->
     <div class="cta-box">
       <a href="projects.html" class="btn-projects">Смотреть все фильмы и проекты →</a>
     </div>
   </main>
 
+  <!-- Модальное окно контактов -->
   <div class="modal-overlay" id="contactModal" onclick="closeModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModal()">×</button>
       <h3 style="margin-bottom: 0.5rem; font-size: 1.3rem;">Связь с нами</h3>
-      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem;">По вопросам коллабораций, съемок и предложений</p>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">По вопросам коллабораций, съемок и предложений</p>
       
-      <a href="mailto:production@damninteractive.ru" class="contact-link">production@damninteractive.ru</a>
+      <div class="contact-copy-box" onclick="copyEmail()">
+        <span id="mailText">production@damninteractive.ru</span>
+        <span id="copyHint" style="display: block; font-size: 0.75rem; color: #888; margin-top: 6px;">(нажми, чтобы скопировать)</span>
+      </div>
     </div>
   </div>
 
@@ -202,7 +211,19 @@
     function openModal() { document.getElementById('contactModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('contactModal').style.display = 'none'; }
 
-    // Автоматический пуск видео
+    function copyEmail() {
+      navigator.clipboard.writeText("production@damninteractive.ru").then(() => {
+        const hint = document.getElementById("copyHint");
+        hint.innerText = "✓ Скопировано в буфер обмена!";
+        hint.style.color = "#00ff66";
+        setTimeout(() => {
+          hint.innerText = "(нажми, чтобы скопировать)";
+          hint.style.color = "#888";
+        }, 2500);
+      });
+    }
+
+    // Автоматический запуск видео
     window.addEventListener('DOMContentLoaded', () => {
       const vid = document.getElementById('introVideo');
       if (vid) {
@@ -210,7 +231,6 @@
         const playPromise = vid.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            // Если браузер всё равно блокирует автоплей до взаимодействия, запускаем по первому тапу/клику
             document.body.addEventListener('click', () => vid.play(), { once: true });
           });
         }
