@@ -36,7 +36,8 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     .brand { font-weight: 700; color: #fff; text-decoration: none; }
-    .nav-links a { color: var(--text-dim); text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
     .nav-links a:hover { color: #fff; }
 
     main { max-width: 950px; margin: 0 auto; padding: 3rem 1.5rem; }
@@ -46,7 +47,7 @@
 
     .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
 
-    /* Карточки оборудования с чередованием фото */
+    /* Карточки оборудования */
     .gear-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -54,13 +55,13 @@
       padding: 2rem;
       margin-bottom: 2rem;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1.2fr;
       gap: 2rem;
       align-items: center;
     }
 
     .gear-card.reverse {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
     }
     .gear-card.reverse .gear-img-box {
       order: 2;
@@ -84,14 +85,23 @@
       overflow: hidden;
       min-height: 220px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
     .gear-img-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+    .fallback-box {
+      padding: 2rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      color: #555;
+      font-size: 0.85rem;
     }
 
     .gear-tag {
@@ -103,13 +113,31 @@
     }
 
     .gear-info h3 { font-size: 1.5rem; margin-bottom: 0.75rem; color: #fff; }
-    .gear-info p { color: #b3b8c2; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.5rem; }
+    .gear-info p { color: #b3b8c2; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.6rem; }
+
+    .status-pill {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.8rem;
+    }
+    .status-active {
+      background: rgba(0, 255, 102, 0.1);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+    }
+    .status-fresh {
+      background: rgba(0, 170, 255, 0.1);
+      color: #00aaff;
+      border: 1px solid rgba(0, 170, 255, 0.3);
+    }
 
     /* Зал почёта */
     .hall-of-fame {
       border: 1px solid rgba(245, 166, 35, 0.3);
       background: radial-gradient(circle at top left, #1c1507 0%, var(--card-bg) 70%);
-      position: relative;
     }
     .hof-badge {
       display: inline-block;
@@ -135,7 +163,6 @@
       border: 1px dashed #343842;
       border-radius: 8px;
       padding: 1.5rem;
-      position: relative;
     }
     .wish-card h4 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
     .wish-card p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem; }
@@ -153,7 +180,7 @@
       cursor: pointer;
     }
 
-    /* Блок DonationAlerts */
+    /* Донаты DonationAlerts */
     .donate-banner {
       margin-top: 4rem;
       background: linear-gradient(135deg, #1f1205 0%, #0e0f12 100%);
@@ -169,18 +196,15 @@
       background: #ffaa00;
       color: #000;
       font-weight: 700;
-      padding: 0.9rem 2.2rem;
+      padding: 0.95rem 2.4rem;
       border-radius: 8px;
       text-decoration: none;
       font-family: 'JetBrains Mono', monospace;
       transition: all 0.2s;
     }
-    .btn-donate:hover {
-      background: #ffbb33;
-      transform: translateY(-2px);
-    }
+    .btn-donate:hover { background: #ffbb33; transform: translateY(-2px); }
 
-    /* Админ панель */
+    /* Админка */
     .admin-bar {
       margin-top: 4rem;
       padding-top: 2rem;
@@ -189,39 +213,24 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem;
     }
-    .admin-toggle {
-      color: #444;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
+    .admin-toggle { color: #444; background: none; border: none; cursor: pointer; }
     .admin-toggle:hover { color: #888; }
     #adminControls {
       display: none;
-      margin-top: 1rem;
+      margin: 1rem auto 0;
       padding: 1rem;
       background: #15161a;
       border: 1px solid #333;
       border-radius: 6px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
+      max-width: 380px;
     }
     #adminControls input {
-      background: #000;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 0.4rem;
-      border-radius: 4px;
-      font-family: inherit;
+      background: #000; border: 1px solid #444; color: #fff;
+      padding: 0.4rem; border-radius: 4px; font-family: inherit;
     }
     #adminControls button {
-      background: #fff;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
+      background: #fff; border: none; padding: 0.4rem 0.8rem;
+      border-radius: 4px; cursor: pointer; font-weight: bold;
     }
   </style>
 </head>
@@ -240,66 +249,73 @@
     <h1 class="page-title">На что мы снимаем</h1>
     <p class="page-desc">Технический арсенал Damn Interactive, реликвии студии и цели по железу.</p>
 
+    <!-- ТЕКУЩЕЕ ОБОРУДОВАНИЕ -->
     <h2 class="section-title">Текущее оборудование</h2>
     <div id="currentGearContainer">
       
+      <!-- iPhone 17 White -->
       <div class="gear-card">
-        <div class="gear-img-box">
-          <img src="iphone17.png" alt="iPhone 17 White" onerror="this.onerror=null; this.src='iphone17.jpg';" />
+        <div class="gear-img-box" id="box-iphone">
+          <img src="iphone17.png" alt="iPhone 17 White" onerror="handleImgError(this, ['iphone17.jpg', 'iphone17.jpeg', 'iphone17.PNG'])" />
         </div>
         <div class="gear-info">
           <div class="gear-tag">Основная камера // Смартфон</div>
+          <span class="status-pill status-active">● В БОЕВОМ ПРОДАКШНЕ</span>
           <h3>iPhone 17 (White)</h3>
           <p>
-            Флагманский смартфон от Apple в белом исполнении. Наш главный съёмочный девайс прямо сейчас.
+            Флагманский смартфон от Apple в белом цвете. Наше главное съёмочное ядро прямо сейчас.
           </p>
           <p>
-            Топовая мобильная оптика, кинематографичный режим, бешеная детализация 4K и стабилизация, вытягивающая кадры даже в самых динамичных сценах триллеров.
+            Именно на этот девайс был полностью снят наш психологический триллер <strong>«Уборщик 2: Страшно вырубай»</strong> всего за 4 часа. Кинематографичный режим, бешеная детализация в 4K и стабилизация позволили выжать максимум грязи и саспенса из школьных стен и улицы перед входом.
           </p>
         </div>
       </div>
 
+      <!-- DJI Osmo Mobile 8P -->
       <div class="gear-card reverse">
-        <div class="gear-img-box">
-          <img src="osmo.png" alt="DJI Osmo Mobile 8P" onerror="this.onerror=null; this.src='osmo.jpg';" />
+        <div class="gear-img-box" id="box-osmo">
+          <img src="osmo.png" alt="DJI Osmo Mobile 8P" onerror="handleImgError(this, ['osmo.jpg', 'osmo.jpeg', 'osmo.PNG'])" />
         </div>
         <div class="gear-info">
-          <div class="gear-tag">Стабилизация // Сетап</div>
+          <div class="gear-tag">Стабилизация // Свежее пополнение</div>
+          <span class="status-pill status-fresh">★ ВЗЯТ В АВГУСТЕ 2026 // ЖДЁТ ДЕБЮТА</span>
           <h3>DJI Osmo Mobile 8P</h3>
           <p>
-            Продвинутый трёхосевой электронный стабилизатор. Отвечает за плавные скользящие пролётки и слежение за актёрами в тесных коридорах и на бегу.
+            Продвинутый трёхосевой электронный стабилизатор от DJI. Был приобретён студией в <strong>августе 2026 года</strong>.
           </p>
           <p>
-            Позволяет превратить трясущуюся съёмку от первого лица в плотный кинематографичный визуал.
+            В предыдущих фильмах пока не использовался — мы готовим его как секретное оружие для <strong>«Project 21»</strong>. Именно он обеспечит скользящие пролётки, трекинг и полное отсутствие дешевой тряски в замкнутом пространстве за карточным столом.
           </p>
         </div>
       </div>
 
     </div>
 
+    <!-- ЗАЛ ПОЧЁТА -->
     <h2 class="section-title" style="margin-top: 3.5rem; color: var(--gold);">🏛️ Зал почёта</h2>
     <div class="gear-card hall-of-fame">
-      <div class="gear-img-box">
-        <img src="redmi.png" alt="Redmi Note 10 Pro" onerror="this.onerror=null; this.src='redmi.jpg';" />
+      <div class="gear-img-box" id="box-redmi">
+        <img src="redmi.png" alt="Redmi Note 10 Pro" onerror="handleImgError(this, ['redmi.jpg', 'redmi.jpeg', 'redmi.PNG'])" />
       </div>
       <div class="gear-info">
         <span class="hof-badge">ЛЕГЕНДА СТУДИИ // СНЯТО С ПРОИЗВОДСТВА</span>
         <h3>Xiaomi Redmi Note 10 Pro</h3>
         <p>
-          <strong>Год выхода:</strong> 2021 год. Тот самый народный монстр от бренда Xiaomi, с которого вообще началась вся история Damn Interactive.
+          <strong>Год релиза:</strong> 2021 год. Тот самый аппарат, с которого началась студия Damn Interactive.
         </p>
         <p>
-          Он прошёл через всё: падения на бетон, треснутый в хлам экран, перегревы на солнце и съёмку в сырых заброшках. На этот полуживой телефон вдвоём был полностью снят наш фильм о вреде веществ («Уборщик 2») ровно за 4 часа.
+          Разбитый в хлам экран, падения на плитку и асфальт, нулевой бюджет — именно на этот боевой Redmi был с нуля снят наш дебютный слэшер <strong>«Уборщик 1»</strong> в коридорах школы. 
         </p>
         <p style="color: var(--gold); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">
-          // Бессмертный боец, заслуживший вечный покой на полке почета.
+          // Аппарат, доказавший: если есть идея и ярость, снять кино можно даже на кирпич с трещинами.
         </p>
       </div>
     </div>
 
+    <!-- КОПИМ / СОБИРАЕМ -->
     <h2 class="section-title" style="margin-top: 3.5rem;">🎯 Копим и собираем</h2>
     <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">
-      Железо, на которое мы откладываем каждую копейку для перехода на профессиональный киноуровень:
+      Оборудование для перехода на полноценный киноуровень:
     </p>
 
     <div class="wishlist-grid" id="wishlistContainer">
@@ -307,29 +323,31 @@
       <div class="wish-card" id="card-sony">
         <div class="gear-tag">Камера // Кино-сетап</div>
         <h4>Sony Vlogcam ZV-E10</h4>
-        <p>Кроп-камера со сменной оптикой Sony E. Нужна для взрослой киношной картинки с глубоким боке и чистым ISO при съёмках в полумраке.</p>
+        <p>Камера со сменной оптикой для глубокого киношного боке и съёмки в тёмных сценах без цифрового шума.</p>
         <button class="btn-bought" onclick="markAsBought('card-sony', 'Sony Vlogcam ZV-E10', 'Камера со сменной оптикой для студийной картинки и ночных сцен.', 'Камера // Кино-сетап')">✓ Куплено! Перенести в сетап</button>
       </div>
 
       <div class="wish-card" id="card-dji-mic">
         <div class="gear-tag">Звук // Петлички</div>
         <h4>DJI Mic Mini 2</h4>
-        <p>Беспроводная радиосистема с чистым звуком и шумоподавлением. Чтобы диалоги в сценах звучали плотно и разборчиво без лишнего эха.</p>
-        <button class="btn-bought" onclick="markAsBought('card-dji-mic', 'DJI Mic Mini 2', 'Компактные беспроводные микрофоны для кристально чистого звука диалогов.', 'Звук // Петлички')">✓ Куплено! Перенести в сетап</button>
+        <p>Беспроводные микрофоны для кристально чистого звука диалогов без эха и ветра.</p>
+        <button class="btn-bought" onclick="markAsBought('card-dji-mic', 'DJI Mic Mini 2', 'Компактные беспроводные петлички для чистого звука диалогов.', 'Звук // Петлички')">✓ Куплено! Перенести в сетап</button>
       </div>
 
     </div>
 
+    <!-- DONATIONALERTS -->
     <div class="donate-banner">
       <h3>Поддержать продакшн</h3>
       <p>
-        Мы снимаем независимое кино своими силами и без спонсоров. Ваша поддержка помогает начинающему кинопроекту закупать свет, качественный звук и реквизит для съемок.
+        Ваша поддержка помогает начинающему кинопроекту закупать свет, качественный звук и реквизит для съемок. Мы снимаем кино своими силами и без спонсоров.
       </p>
-      <a href="https://www.donationalerts.com/r/твой_ник" target="_blank" class="btn-donate">
+      <a href="https://www.donationalerts.com/r/damninteractive" target="_blank" class="btn-donate">
         Поддержать на DonationAlerts ➔
       </a>
     </div>
 
+    <!-- Админка -->
     <div class="admin-bar">
       <button class="admin-toggle" onclick="toggleAdminPrompt()">[ Вход для админа ]</button>
       
@@ -342,7 +360,20 @@
   </main>
 
   <script>
-    // Пароль админа по умолчанию
+    function handleImgError(imgElement, fallbacks) {
+      if (fallbacks && fallbacks.length > 0) {
+        const nextSrc = fallbacks.shift();
+        imgElement.onerror = function() {
+          handleImgError(imgElement, fallbacks);
+        };
+        imgElement.src = nextSrc;
+      } else {
+        const parent = imgElement.parentElement;
+        const altText = imgElement.alt || "Девайс";
+        parent.innerHTML = `<div class="fallback-box"><div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📷</div>[ ${altText} ]<br><span style="font-size: 0.7rem; color: #444;">загрузите ${imgElement.src.split('/').pop()}</span></div>`;
+      }
+    }
+
     const ADMIN_PASSWORD = "damn";
 
     function toggleAdminPrompt() {
@@ -361,20 +392,17 @@
       }
     }
 
-    // Перемещение купленного оборудования наверх
     function markAsBought(cardId, title, desc, tag) {
       if (!confirm(`Перенести "${title}" в текущее оборудование?`)) return;
 
-      // Удаляем из списка желаемого
       const wishCard = document.getElementById(cardId);
       if (wishCard) wishCard.remove();
 
-      // Создаем новую карточку в основном сетапе
       const container = document.getElementById('currentGearContainer');
       const newCard = document.createElement('div');
       newCard.className = 'gear-card';
       newCard.innerHTML = `
-        <div class="gear-img-box" style="color: #555; font-family: monospace;">[ ФОТО: ${title} ]</div>
+        <div class="gear-img-box"><div class="fallback-box"><div style="font-size: 1.8rem;">✨</div>[ ${title} ]</div></div>
         <div class="gear-info">
           <div class="gear-tag">${tag} // Недавно приобретено</div>
           <h3>${title}</h3>
@@ -382,17 +410,14 @@
         </div>
       `;
       container.appendChild(newCard);
-
-      // Сохраняем статус в памяти браузера
       localStorage.setItem('bought_' + cardId, 'true');
     }
 
-    // Восстановление состояния при перезагрузке
     window.addEventListener('DOMContentLoaded', () => {
       ['card-sony', 'card-dji-mic'].forEach(id => {
         if (localStorage.getItem('bought_' + id) === 'true') {
           const el = document.getElementById(id);
-          if (el) el.style.opacity = '0.4';
+          if (el) el.style.display = 'none';
         }
       });
     });
