@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сетап и поддержка // damn interactive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070708;
+      --card-bg: #0f1012;
+      --border: #202226;
+      --text: #e6e6e6;
+      --text-dim: #8b9099;
+      --accent: #ff2a2a;
+      --gold: #f5a623;
+      --green: #00ff66;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7, 7, 8, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { font-weight: 700; color: #fff; text-decoration: none; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+
+    main { max-width: 950px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+    .page-title { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .page-desc { color: var(--text-dim); margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+
+    .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+
+    /* Карточки оборудования с чередованием фото */
+    .gear-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .gear-card.reverse {
+      grid-template-columns: 1fr 1fr;
+    }
+    .gear-card.reverse .gear-img-box {
+      order: 2;
+    }
+    .gear-card.reverse .gear-info {
+      order: 1;
+    }
+
+    @media (max-width: 768px) {
+      .gear-card, .gear-card.reverse {
+        grid-template-columns: 1fr !important;
+      }
+      .gear-card.reverse .gear-img-box { order: 1; }
+      .gear-card.reverse .gear-info { order: 2; }
+    }
+
+    .gear-img-box {
+      background: #000;
+      border: 1px solid #2a2c33;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gear-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gear-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .gear-info h3 { font-size: 1.5rem; margin-bottom: 0.75rem; color: #fff; }
+    .gear-info p { color: #b3b8c2; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.5rem; }
+
+    /* Зал почёта */
+    .hall-of-fame {
+      border: 1px solid rgba(245, 166, 35, 0.3);
+      background: radial-gradient(circle at top left, #1c1507 0%, var(--card-bg) 70%);
+      position: relative;
+    }
+    .hof-badge {
+      display: inline-block;
+      background: rgba(245, 166, 35, 0.15);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    /* Копим / Собираем */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .wish-card {
+      background: #121317;
+      border: 1px dashed #343842;
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .wish-card h4 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+    .wish-card p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem; }
+    
+    .btn-bought {
+      display: none;
+      background: var(--green);
+      color: #000;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Блок DonationAlerts */
+    .donate-banner {
+      margin-top: 4rem;
+      background: linear-gradient(135deg, #1f1205 0%, #0e0f12 100%);
+      border: 1px solid #452a0a;
+      border-radius: 12px;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    .donate-banner h3 { font-size: 1.7rem; color: #ffaa00; margin-bottom: 0.75rem; }
+    .donate-banner p { max-width: 650px; margin: 0 auto 1.5rem; color: #c2c5cc; }
+    .btn-donate {
+      display: inline-block;
+      background: #ffaa00;
+      color: #000;
+      font-weight: 700;
+      padding: 0.9rem 2.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+    }
+    .btn-donate:hover {
+      background: #ffbb33;
+      transform: translateY(-2px);
+    }
+
+    /* Админ панель */
+    .admin-bar {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid #1a1c20;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .admin-toggle {
+      color: #444;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .admin-toggle:hover { color: #888; }
+    #adminControls {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #15161a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #adminControls input {
+      background: #000;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 0.4rem;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    #adminControls button {
+      background: #fff;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="brand">damn interactive</a>
+    <div class="nav-links">
+      <a href="index.html">Главная</a>
+      <a href="projects.html">Фильмы</a>
+      <a href="gear.html" style="color: #fff;">Сетап</a>
+    </div>
+  </nav>
+
+  <main>
+    <h1 class="page-title">На что мы снимаем</h1>
+    <p class="page-desc">Технический арсенал Damn Interactive, реликвии студии и цели по железу.</p>
+
+    <h2 class="section-title">Текущее оборудование</h2>
+    <div id="currentGearContainer">
+      
+      <div class="gear-card">
+        <div class="gear-img-box">
+          <img src="iphone17.png" alt="iPhone 17 White" onerror="this.onerror=null; this.src='iphone17.jpg';" />
+        </div>
+        <div class="gear-info">
+          <div class="gear-tag">Основная камера // Смартфон</div>
+          <h3>iPhone 17 (White)</h3>
+          <p>
+            Флагманский смартфон от Apple в белом исполнении. Наш главный съёмочный девайс прямо сейчас.
+          </p>
+          <p>
+            Топовая мобильная оптика, кинематографичный режим, бешеная детализация 4K и стабилизация, вытягивающая кадры даже в самых динамичных сценах триллеров.
+          </p>
+        </div>
+      </div>
+
+      <div class="gear-card reverse">
+        <div class="gear-img-box">
+          <img src="osmo.png" alt="DJI Osmo Mobile 8P" onerror="this.onerror=null; this.src='osmo.jpg';" />
+        </div>
+        <div class="gear-info">
+          <div class="gear-tag">Стабилизация // Сетап</div>
+          <h3>DJI Osmo Mobile 8P</h3>
+          <p>
+            Продвинутый трёхосевой электронный стабилизатор. Отвечает за плавные скользящие пролётки и слежение за актёрами в тесных коридорах и на бегу.
+          </p>
+          <p>
+            Позволяет превратить трясущуюся съёмку от первого лица в плотный кинематографичный визуал.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <h2 class="section-title" style="margin-top: 3.5rem; color: var(--gold);">🏛️ Зал почёта</h2>
+    <div class="gear-card hall-of-fame">
+      <div class="gear-img-box">
+        <img src="redmi.png" alt="Redmi Note 10 Pro" onerror="this.onerror=null; this.src='redmi.jpg';" />
+      </div>
+      <div class="gear-info">
+        <span class="hof-badge">ЛЕГЕНДА СТУДИИ // СНЯТО С ПРОИЗВОДСТВА</span>
+        <h3>Xiaomi Redmi Note 10 Pro</h3>
+        <p>
+          <strong>Год выхода:</strong> 2021 год. Тот самый народный монстр от бренда Xiaomi, с которого вообще началась вся история Damn Interactive.
+        </p>
+        <p>
+          Он прошёл через всё: падения на бетон, треснутый в хлам экран, перегревы на солнце и съёмку в сырых заброшках. На этот полуживой телефон вдвоём был полностью снят наш фильм о вреде веществ («Уборщик 2») ровно за 4 часа.
+        </p>
+        <p style="color: var(--gold); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">
+          // Бессмертный боец, заслуживший вечный покой на полке почета.
+        </p>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 3.5rem;">🎯 Копим и собираем</h2>
+    <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">
+      Железо, на которое мы откладываем каждую копейку для перехода на профессиональный киноуровень:
+    </p>
+
+    <div class="wishlist-grid" id="wishlistContainer">
+      
+      <div class="wish-card" id="card-sony">
+        <div class="gear-tag">Камера // Кино-сетап</div>
+        <h4>Sony Vlogcam ZV-E10</h4>
+        <p>Кроп-камера со сменной оптикой Sony E. Нужна для взрослой киношной картинки с глубоким боке и чистым ISO при съёмках в полумраке.</p>
+        <button class="btn-bought" onclick="markAsBought('card-sony', 'Sony Vlogcam ZV-E10', 'Камера со сменной оптикой для студийной картинки и ночных сцен.', 'Камера // Кино-сетап')">✓ Куплено! Перенести в сетап</button>
+      </div>
+
+      <div class="wish-card" id="card-dji-mic">
+        <div class="gear-tag">Звук // Петлички</div>
+        <h4>DJI Mic Mini 2</h4>
+        <p>Беспроводная радиосистема с чистым звуком и шумоподавлением. Чтобы диалоги в сценах звучали плотно и разборчиво без лишнего эха.</p>
+        <button class="btn-bought" onclick="markAsBought('card-dji-mic', 'DJI Mic Mini 2', 'Компактные беспроводные микрофоны для кристально чистого звука диалогов.', 'Звук // Петлички')">✓ Куплено! Перенести в сетап</button>
+      </div>
+
+    </div>
+
+    <div class="donate-banner">
+      <h3>Поддержать продакшн</h3>
+      <p>
+        Мы снимаем независимое кино своими силами и без спонсоров. Ваша поддержка помогает начинающему кинопроекту закупать свет, качественный звук и реквизит для съемок.
+      </p>
+      <a href="https://www.donationalerts.com/r/твой_ник" target="_blank" class="btn-donate">
+        Поддержать на DonationAlerts ➔
+      </a>
+    </div>
+
+    <div class="admin-bar">
+      <button class="admin-toggle" onclick="toggleAdminPrompt()">[ Вход для админа ]</button>
+      
+      <div id="adminControls">
+        <p style="margin-bottom: 0.5rem; color: #aaa;">Пароль админа:</p>
+        <input type="password" id="adminPass" placeholder="Пароль">
+        <button onclick="loginAdmin()">Войти</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Пароль админа по умолчанию
+    const ADMIN_PASSWORD = "damn";
+
+    function toggleAdminPrompt() {
+      const box = document.getElementById('adminControls');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === ADMIN_PASSWORD) {
+        alert("Вход выполнен! Теперь вы можете переносить купленные девайсы.");
+        document.querySelectorAll('.btn-bought').forEach(btn => btn.style.display = 'inline-block');
+        document.getElementById('adminControls').innerHTML = '<span style="color: #00ff66;">Режим админа активирован</span>';
+      } else {
+        alert("Неверный пароль!");
+      }
+    }
+
+    // Перемещение купленного оборудования наверх
+    function markAsBought(cardId, title, desc, tag) {
+      if (!confirm(`Перенести "${title}" в текущее оборудование?`)) return;
+
+      // Удаляем из списка желаемого
+      const wishCard = document.getElementById(cardId);
+      if (wishCard) wishCard.remove();
+
+      // Создаем новую карточку в основном сетапе
+      const container = document.getElementById('currentGearContainer');
+      const newCard = document.createElement('div');
+      newCard.className = 'gear-card';
+      newCard.innerHTML = `
+        <div class="gear-img-box" style="color: #555; font-family: monospace;">[ ФОТО: ${title} ]</div>
+        <div class="gear-info">
+          <div class="gear-tag">${tag} // Недавно приобретено</div>
+          <h3>${title}</h3>
+          <p>${desc}</p>
+        </div>
+      `;
+      container.appendChild(newCard);
+
+      // Сохраняем статус в памяти браузера
+      localStorage.setItem('bought_' + cardId, 'true');
+    }
+
+    // Восстановление состояния при перезагрузке
+    window.addEventListener('DOMContentLoaded', () => {
+      ['card-sony', 'card-dji-mic'].forEach(id => {
+        if (localStorage.getItem('bought_' + id) === 'true') {
+          const el = document.getElementById(id);
+          if (el) el.style.opacity = '0.4';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
