@@ -18,10 +18,10 @@
       flex-direction: column;
       position: relative;
       overflow-x: hidden;
-      overflow-y: hidden; /* Пока грузится, скролла нет */
+      overflow-y: hidden;
     }
 
-    /* Эффект ЭЛТ-монитора (сканлайны) - поверх всего */
+    /* Эффект ЭЛТ-монитора со сканлайнами */
     body::before {
       content: " ";
       position: fixed;
@@ -32,7 +32,7 @@
       z-index: 999;
     }
 
-    /* СОСТОЯНИЕ 1: ВЫКЛЮЧЕННЫЙ КОМП */
+    /* ВЫКЛЮЧЕННЫЙ ПК */
     #powerScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -62,7 +62,7 @@
       text-align: center;
     }
     .power-btn {
-      width: 40px; height: 40px;
+      width: 42px; height: 42px;
       border-radius: 50%;
       background: #0a0a0a;
       border: 2px solid #333;
@@ -70,7 +70,7 @@
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       color: #444;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       transition: all 0.2s;
     }
     .power-btn:hover {
@@ -90,7 +90,7 @@
       letter-spacing: 2px;
     }
 
-    /* СОСТОЯНИЕ 2: ЗАГРУЗКА BIOS / DOS */
+    /* ЭКРАН ЗАГРУЗКИ BIOS */
     #bootScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -98,13 +98,50 @@
       z-index: 50;
       padding: 1.5rem;
       display: none;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: #ccc;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: #bbb;
     }
-    .boot-line { margin-bottom: 0.3rem; }
+    .boot-line { margin-bottom: 0.25rem; }
 
-    /* СОСТОЯНИЕ 3: РАБОЧИЙ ТЕРМИНАЛ */
+    /* Олдскульный логотип Energy Star в правом углу */
+    .energy-star-badge {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 130px;
+      border: 2px solid #00ff66;
+      padding: 6px;
+      text-align: center;
+      color: #00ff66;
+      background: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+    }
+    .energy-star-badge svg {
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: #00ff66;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin: 0 auto 4px;
+      display: block;
+    }
+    .energy-star-badge .es-title {
+      font-size: 0.65rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .energy-star-badge .es-sub {
+      font-size: 0.45rem;
+      letter-spacing: 0.5px;
+      color: #00aa44;
+    }
+
+    /* ОСНОВНОЙ ТЕРМИНАЛ */
     #terminalScreen {
       display: none;
       flex-direction: column;
@@ -174,12 +211,11 @@
     }
     .back-link a { color: #005522; text-decoration: none; }
     .back-link a:hover { color: #00ff66; }
-
   </style>
 </head>
 <body>
 
-  <!-- 1. Экран выключенного ПК -->
+  <!-- Экран выключенного ПК с кнопкой питания -->
   <div id="powerScreen">
     <div class="monitor-dark"></div>
     <div class="pc-case">
@@ -190,10 +226,19 @@
     </div>
   </div>
 
-  <!-- 2. Экран загрузки BIOS / MS-DOS -->
-  <div id="bootScreen"></div>
+  <!-- Экран BIOS c Energy Star -->
+  <div id="bootScreen">
+    <div class="energy-star-badge" id="energyLogo">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+      </svg>
+      <div class="es-title">energy</div>
+      <div class="es-sub">EPA POLLUTION PREVENTER</div>
+    </div>
+    <div id="bootText"></div>
+  </div>
 
-  <!-- 3. Основной терминал -->
+  <!-- Терминал DAMN-OS -->
   <div id="terminalScreen">
     <div class="terminal-container">
       <div class="term-header">
@@ -222,48 +267,75 @@
   </div>
 
   <script>
-    /* ЛОГИКА ЗАГРУЗКИ (BOOT SEQUENCE) */
     const powerBtn = document.getElementById('powerBtn');
     const powerScreen = document.getElementById('powerScreen');
     const bootScreen = document.getElementById('bootScreen');
+    const bootText = document.getElementById('bootText');
+    const energyLogo = document.getElementById('energyLogo');
     const terminalScreen = document.getElementById('terminalScreen');
     const cmdInput = document.getElementById('cmdInput');
 
-    // Текст для симуляции BIOS и DOS
+    // Функция генерации звука спикера BIOS (POST Beep 880Hz)
+    function playMotherboardBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'square'; // Характерный резкий звук старого зуммера
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 880 Hz
+
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.18);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.18);
+      } catch (e) {
+        console.log("Audio not supported or blocked");
+      }
+    }
+
     const bootSequenceLines = [
-      "Award Modular BIOS v4.51PG, An Energy Star Ally",
-      "Copyright (C) 1984-2026, Award Software, Inc.",
+      "Award Modular BIOS v6.00PG, An Energy Star Ally",
+      "Copyright (C) 1984-2004, Award Software, Inc.",
+      "ASUS P4P800 ACPI BIOS Revision 1019",
       "<br>",
-      "DAMN INTERACTIVE MOTHERBOARD REV 2.1",
+      "Main Processor : Intel(R) Pentium(R) 4 CPU 3.00GHz (800MHz FSB)",
+      "Memory Testing : 1048576K OK (1024MB DDR-400 SDRAM Dual Channel)",
       "<br>",
-      "Main Processor : DAMN-CORE(tm) 666 MHz",
-      "Memory Testing : 1048576K OK",
+      "Primary Master   : ST350014A Seagate Barracuda 7200.7 50.0 GB",
+      "Primary Slave    : None",
+      "Secondary Master : ASUS CD-S520/A5 CD-ROM 52x",
+      "Secondary Slave  : None",
       "<br>",
-      "Detecting IDE Primary Master ... HHD-PROJECT21",
-      "Detecting IDE Primary Slave  ... None",
-      "Detecting IDE Secondary Master ... None",
-      "<br>",
-      "Press DEL to enter SETUP",
+      "Press DEL to enter SETUP, ESC to skip memory test",
+      "Booting from Primary Master...",
       "...",
-      "CLEAR", // Специальный флаг для очистки экрана перед DOS
+      "CLEAR",
       "Starting MS-DOS 8.0...",
       "<br>",
       "HIMEM is testing extended memory...done.",
-      "Loading CD-ROM device driver...",
+      "C:\\> PATH=C:\\DOS;C:\\DAMN_OS",
+      "C:\\> LH C:\\DOS\\SMARTDRV.EXE 2048",
       "C:\\> CD \\DAMN_OS",
-      "C:\\DAMN_OS> boot.exe",
-      "INITIATING SECURE PROTOCOL...",
-      "Connecting to school_sector_01...",
+      "C:\\DAMN_OS> execute damn_term.exe -auth guest",
+      "ESTABLISHING PROTOCOL [SCHOOL_LOCAL_NET]...",
+      "CONNECTED (PORT 21).",
       "DONE."
     ];
 
     powerBtn.addEventListener('click', () => {
-      // Прячем корпус компа
+      // 1. Звук писка спикера
+      playMotherboardBeep();
+
+      // 2. Переключение на экран загрузки
       powerScreen.style.display = 'none';
       bootScreen.style.display = 'block';
 
-      // Запускаем печать строк
-      let delay = 300;
+      let delay = 250;
       let i = 0;
 
       function printBootLine() {
@@ -271,38 +343,35 @@
           let text = bootSequenceLines[i];
           
           if (text === "CLEAR") {
-            bootScreen.innerHTML = "";
-            delay = 800; // Пауза перед загрузкой DOS
+            bootText.innerHTML = "";
+            energyLogo.style.display = "none"; // Прячем логотип Energy Star перед входом в MS-DOS
+            delay = 700;
           } else {
-            bootScreen.innerHTML += `<div class="boot-line">${text}</div>`;
-            // Рандомим задержку для реалистичности (от 50 до 300мс)
-            delay = text.includes("...") ? 500 : Math.floor(Math.random() * 150) + 50;
+            bootText.innerHTML += `<div class="boot-line">${text}</div>`;
+            delay = text.includes("...") ? 450 : Math.floor(Math.random() * 120) + 40;
           }
           
           i++;
           setTimeout(printBootLine, delay);
         } else {
-          // Конец загрузки, запускаем терминал
           setTimeout(() => {
             bootScreen.style.display = 'none';
             terminalScreen.style.display = 'flex';
-            document.body.style.overflowY = 'auto'; // Возвращаем скролл
+            document.body.style.overflowY = 'auto';
             
-            // Плавное появление
             setTimeout(() => {
               terminalScreen.style.opacity = '1';
               cmdInput.focus();
             }, 100);
 
-          }, 800);
+          }, 600);
         }
       }
 
       printBootLine();
     });
 
-
-    /* ЛОГИКА ТЕРМИНАЛА (ARG) */
+    // Логика самого терминала
     const output = document.getElementById('termOutput');
 
     const commands = {
