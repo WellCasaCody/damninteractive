@@ -56,7 +56,7 @@
       border: 1px solid #4a1515;
       border-radius: 12px;
       padding: 2.5rem;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
       position: relative;
     }
     .status-badge {
@@ -76,9 +76,9 @@
     /* Сетка остальных фильмов */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1.5rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
     }
 
     .film-card {
@@ -86,12 +86,27 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       transition: all 0.2s;
     }
     .film-card:hover { border-color: #444; transform: translateY(-3px); }
     .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; }
-    .film-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
-    .film-card p { color: var(--text-dim); font-size: 0.9rem; }
+    .film-card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; }
+    .film-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+    .film-badge {
+      display: inline-block;
+      margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e6e6e6;
+      background: #18191c;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      align-self: flex-start;
+      border: 1px solid #2a2c33;
+    }
   </style>
 </head>
 <body>
@@ -104,40 +119,46 @@
   </nav>
 
   <main>
-    <h1 class="page-title">Проекты</h1>
-    <p class="page-desc">Все наши фильмы, короткометражки и то, что находится в производстве.</p>
+    <h1 class="page-title">Фильмы и проекты</h1>
+    <p class="page-desc">Каталог короткометражек и проектов в разработке.</p>
 
     <div class="project-hero">
       <span class="status-badge">В ПРОИЗВОДСТВЕ // 2026</span>
       <h2>Project 21</h2>
-      <div class="subtitle">Психологический триллер • Азарт • Выживание</div>
-      <p style="color: #c4c8d1; max-width: 700px; margin-bottom: 1rem;">
-        Ты приходишь в себя за холодным металлическим столом. Вместо карт на кону — твои пальцы, время и жизнь. История о том, как одна неверная ставка в подпольной игре «21» запускает необратимый механизм.
+      <div class="subtitle">Психологический триллер • Азарт • Игра на жизнь</div>
+      <p style="color: #c4c8d1; max-width: 720px; margin-bottom: 1rem;">
+        Ты приходишь в себя за столом. Напротив — противник, а на кону не фишки, а пальцы и собственная жизнь. Подпольная игра «21», где азарт ломает рассудок, а правила диктует тот, кто контролирует комнату.
       </p>
       <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #888;">
         // Вдохновлено культовым DLC «21» из Resident Evil 7.
       </p>
     </div>
 
-    <h2 style="font-size: 1.4rem; margin-top: 3rem;">Короткий метр</h2>
+    <h2 style="font-size: 1.4rem;">Дилогия «Уборщик»</h2>
     <div class="grid">
+      
       <div class="film-card">
-        <div class="tag">Короткометражка // Дебют</div>
-        <h3>Уборщик</h3>
-        <p>Первый проект, положивший начало студии. Снято на чистом энтузиазме и подручной технике.</p>
+        <div>
+          <div class="tag">Слэшер // Мистика</div>
+          <h3>Уборщик</h3>
+          <p>
+            Дебютная работа студии. История парня, которого жестоко забили насмерть толпой. Но смерть не стала концом: вернувшись бестелесным мстительным призраком, он методично и хладнокровно уничтожает каждого своего обидчика.
+          </p>
+        </div>
+        <span class="film-badge">Первый проект студии</span>
       </div>
 
       <div class="film-card">
-        <div class="tag">Короткометражка // Сиквел</div>
-        <h3>Уборщик 2</h3>
-        <p>Вторая часть. Прокачанный визуал, плотная атмосфера и продолжение истории.</p>
+        <div>
+          <div class="tag">Психологический триллер // Хоррор</div>
+          <h3>Уборщик 2: Страшно вырубай</h3>
+          <p>
+            Тот самый фильм про вред веществ. Главный герой просыпается, закидывается колёсами и тут же натыкается на остывающий труп. Пытаясь скрыться от преследующего маньяка, он в итоге ловит его и срывает маску — под ней оказывается его собственное лицо. Финал в стиле Саяки ставит жирную точку.
+          </p>
+        </div>
+        <span class="film-badge">Снято за 4 часа</span>
       </div>
 
-      <div class="film-card">
-        <div class="tag">Социальный триллер // Эксперимент</div>
-        <h3>Фильм о вреде веществ</h3>
-        <p>Тот самый проект, снятый вдвоем ровно за 4 часа. Мрачный, резкий и прямолинейный посыл.</p>
-      </div>
     </div>
   </main>
 
