@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>damn interactive // независимая студия</title>
+  <title>damn interactive // независимое кино</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,9 +13,8 @@
       --card-bg: #0f1012;
       --border: #202226;
       --text: #e6e6e6;
-      --text-dim: #7d828a;
+      --text-dim: #8b9099;
       --accent: #ff2a2a;
-      --accent-glow: rgba(255, 42, 42, 0.25);
     }
 
     * {
@@ -27,7 +26,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
       line-height: 1.6;
       overflow-x: hidden;
     }
@@ -37,7 +36,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 7, 8, 0.85);
+      background: rgba(7, 7, 8, 0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 1rem 2rem;
@@ -59,29 +58,47 @@
       display: flex;
       gap: 1.5rem;
       list-style: none;
+      align-items: center;
     }
 
     .nav-links a {
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       transition: color 0.2s;
     }
 
-    .nav-links a:hover {
+    .nav-links a:hover, .nav-links a.active {
       color: #fff;
     }
 
-    /* Hero / Видео-лого */
+    .contact-btn {
+      background: #18191c;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .contact-btn:hover {
+      background: #252830;
+      border-color: #444;
+    }
+
+    /* Интро с видео */
     header {
       padding: 4rem 1.5rem 3rem;
       text-align: center;
       border-bottom: 1px solid var(--border);
-      background: radial-gradient(circle at top, #14161a 0%, var(--bg) 75%);
+      background: radial-gradient(circle at top, #14161a 0%, var(--bg) 80%);
     }
 
     .video-wrapper {
-      max-width: 520px;
+      max-width: 500px;
       margin: 0 auto;
       border-radius: 8px;
       overflow: hidden;
@@ -99,179 +116,157 @@
     .tagline {
       margin-top: 1.25rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-dim);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
     }
 
     main {
-      max-width: 1050px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 3rem 1.5rem;
+      padding: 3.5rem 1.5rem;
     }
 
-    /* Заголовки разделов */
-    .section-head {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .section-head h2 {
-      font-size: 1.4rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .section-head .line {
-      flex-grow: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* Флагманский блок Project 21 */
-    .featured-project {
-      background: linear-gradient(145deg, #150808 0%, #0d0e11 100%);
-      border: 1px solid #3d1414;
-      border-radius: 12px;
-      padding: 2.5rem;
-      margin-bottom: 4rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 25px var(--accent-glow);
-    }
-
-    .badge-wip {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      font-weight: bold;
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-      letter-spacing: 0.05em;
-    }
-
-    .featured-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 0.5rem;
-    }
-
-    .featured-sub {
-      color: var(--accent);
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-size: 1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .featured-desc {
-      font-size: 1.05rem;
-      color: #b0b4ba;
-      max-width: 650px;
-      margin-bottom: 1.5rem;
-    }
-
-    .featured-quote {
-      border-left: 2px solid var(--accent);
-      padding-left: 1rem;
-      font-style: italic;
-      color: var(--text-dim);
-      font-size: 0.95rem;
-    }
-
-    /* Каталог проектов */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 4.5rem;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.75rem;
-      transition: all 0.25s ease;
-    }
-
-    .card:hover {
-      border-color: #40444c;
-      transform: translateY(-3px);
-    }
-
-    .card-type {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-    }
-
-    .card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .card p {
-      color: var(--text-dim);
-      font-size: 0.9rem;
-    }
-
-    /* Блок О нас */
-    .about-section {
+    /* Блок О НАС */
+    .about-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 2.5rem;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1.2fr;
       gap: 2.5rem;
       align-items: center;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
     }
 
     @media (max-width: 768px) {
-      .about-section {
+      .about-card {
         grid-template-columns: 1fr;
       }
     }
 
-    .about-img-box {
+    .bear-box {
       border-radius: 8px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid #333;
       background: #000;
+      position: relative;
     }
 
-    .about-img-box img {
+    .bear-box img {
       width: 100%;
       height: auto;
       display: block;
-      filter: grayscale(20%) contrast(110%);
     }
 
-    .about-text h3 {
+    .about-content h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .about-content p {
+      color: #b3b8c2;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    .highlight {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .note-badge {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      background: rgba(255, 42, 42, 0.1);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 42, 42, 0.3);
+    }
+
+    /* Кнопка перехода к проектам */
+    .cta-box {
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    .btn-projects {
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-projects:hover {
+      background: #ccc;
+      transform: translateY(-2px);
+    }
+
+    /* Модалка контактов */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-box {
+      background: #141518;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: transparent;
+      border: none;
+      color: #777;
       font-size: 1.5rem;
-      margin-bottom: 1rem;
+      cursor: pointer;
     }
 
-    .about-text p {
-      color: #a5abb5;
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-      line-height: 1.6;
+    .contact-link {
+      display: block;
+      background: #1e2025;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.8rem;
+      margin: 0.8rem 0;
+      border-radius: 6px;
+      border: 1px solid #2d3038;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      transition: all 0.2s;
     }
 
-    /* Футер */
+    .contact-link:hover {
+      background: #2a2d36;
+      border-color: #555;
+    }
+
     footer {
       border-top: 1px solid var(--border);
       padding: 3rem 1.5rem;
@@ -280,26 +275,18 @@
       font-size: 0.8rem;
       color: var(--text-dim);
     }
-
-    .secret-trigger {
-      cursor: pointer;
-      user-select: none;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Меню -->
   <nav>
-    <a href="#" class="brand">damn interactive</a>
+    <a href="index.html" class="brand">damn interactive</a>
     <ul class="nav-links">
-      <li><a href="#projects">Проекты</a></li>
-      <li><a href="#about">О нас</a></li>
-      <li><a href="mailto:contact@damninteractive.ru">Контакт</a></li>
+      <li><a href="projects.html">Фильмы и проекты</a></li>
+      <li><button class="contact-btn" onclick="openModal()">Контакты</button></li>
     </ul>
   </nav>
 
-  <!-- Интро -->
   <header>
     <div class="video-wrapper">
       <video autoplay muted playsinline loop>
@@ -307,97 +294,59 @@
         damn interactive
       </video>
     </div>
-    <p class="tagline">// независимое кино, игры и спецпроекты</p>
+    <p class="tagline">// независимое кино без компромиссов</p>
   </header>
 
   <main>
+    <section class="about-card">
+      <div class="bear-box">
+        <img src="https://media1.tenor.com/m/Zp9wz4Z5h3gAAAAC/danganronpa-monokuma.gif" alt="Монокума работает" />
+      </div>
 
-    <!-- Флагман: Project 21 -->
-    <section class="featured-project">
-      <span class="badge-wip">W.I.P. // СКОРО</span>
-      <h1 class="featured-title">Project 21</h1>
-      <div class="featured-sub">Ставка не сыграла</div>
-      <p class="featured-desc">
-        Просыпаешься за столом и вместо работы ты играешь на жизнь. В этой игре всего два игрока, и только один уйдет живым. Психологический триллер о цене азарта, человеческой слабости и фатальных ставках.
-      </p>
-      <div class="featured-quote">
-        «21 очко или пуля. Кто раздает карты?»
+      <div class="about-content">
+        <h2>Кто мы такие?</h2>
+        <p>
+          <span class="highlight">Damn Interactive</span> — это независимая команда из двух человек, где всё держится на чистом угаре, идеях и съёмках.
+        </p>
+        <p>
+          Мы начинали буквально с разбитого в хлам <span class="highlight">Redmi Note 10 Pro</span>, а дошли до того, что сняли вдвоём фильм про вред веществ на очень плотном уровне.
+        </p>
+        <div class="note-badge">
+          ⚡ Снято за 1 день. А если точнее — ровно за 4 часа.
+        </div>
+        <p style="margin-top: 1rem;">
+          Никаких продюсеров, инвесторов и духоты. Камера, звук и сценарий, который пишется кровью и потом.
+        </p>
       </div>
     </section>
 
-    <!-- Сетка проектов -->
-    <section id="projects">
-      <div class="section-head">
-        <h2>Наши проекты</h2>
-        <div class="line"></div>
-      </div>
-
-      <div class="projects-grid">
-        <div class="card">
-          <div class="card-type">Короткометражный фильм</div>
-          <h3>Уборщик 1</h3>
-          <p>Первый дебютный проект студии, снятый на энтузиазме. Начало истории и первый опыт работы с кадром.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-type">Короткометражный фильм</div>
-          <h3>Уборщик 2</h3>
-          <p>Продолжение истории. Развитие персонажей, более плотная атмосфера и работа над ошибками первой части.</p>
-        </div>
-
-        <div class="card" style="border-color: #3d1414;">
-          <div class="card-type" style="color: var(--accent);">Психологический триллер</div>
-          <h3>Project 21</h3>
-          <p>Флагманский проект студии. Грязная подпольная игра, вдохновленная брутальным выживанием в блэкджеке.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- О студии -->
-    <section id="about">
-      <div class="section-head">
-        <h2>О нас</h2>
-        <div class="line"></div>
-      </div>
-
-      <div class="about-section">
-        <div class="about-img-box">
-          <!-- Картинка с Монокумой: положи файл monokuma.jpg в репозиторий -->
-          <img src="monokuma.jpg" alt="damn interactive workspace" onerror="this.src='https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&q=80'" />
-        </div>
-
-        <div class="about-text">
-          <h3>damn interactive</h3>
-          <p>
-            Это два человека, камера и куча идей, которые мы превращаем в короткий метр.
-          </p>
-          <p>
-            Первые проекты снимали буквально на то, что валялось под рукой, набивая шишки на ходу. Сейчас собираем нормальный сетап, заморачиваемся над светом, пишем чистый звук и делаем упор на напряженную атмосферу.
-          </p>
-          <p style="color: #fff; font-weight: 600;">
-            Делаем кино так, как видим сами. Без лишней духоты и раздутых бюджетов.
-          </p>
-        </div>
-      </div>
-    </section>
-
+    <div class="cta-box">
+      <a href="projects.html" class="btn-projects">Смотреть все фильмы и проекты →</a>
+    </div>
   </main>
+
+  <div class="modal-overlay" id="contactModal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h3 style="margin-bottom: 0.5rem;">Связь с нами</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">По вопросам коллабораций, съемок и предложений</p>
+      
+      <a href="https://t.me/твой_ник" target="_blank" class="contact-link">Telegram // @канал_или_лс</a>
+      <a href="https://vk.com/твой_паблик" target="_blank" class="contact-link">VK // Группа студии</a>
+      <a href="mailto:contact@damninteractive.ru" class="contact-link">Почта: contact@damninteractive.ru</a>
+    </div>
+  </div>
 
   <footer>
     <p>© 2026 DAMN INTERACTIVE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</p>
-    <p style="margin-top: 0.5rem; opacity: 0.3;">
-      SYS_NODE: <span class="secret-trigger" onclick="triggerARG()">ONLINE_21</span>
-    </p>
   </footer>
 
   <script>
-    // Пасхалка в консоли (F12)
-    console.log("%c[DAMN INTERACTIVE // DECK FOUND]", "color: #ff2a2a; font-weight: bold; font-size: 14px;");
-    console.log("Ты ищешь ответы не там. Колода уже перемешана. Первая раздача — в школьном узле: /school-archive.html");
-
-    // Клик по тайному коду внизу
-    function triggerARG() {
-      alert("АРХИВ: Доступ к раздаче открыт. Найди терминал в школе.");
+    function openModal() {
+      document.getElementById('contactModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('contactModal').style.display = 'none';
     }
   </script>
 </body>
