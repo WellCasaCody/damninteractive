@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DAMN-OS // SECURE TERMINAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #050608;
+      color: #00ff66;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Эффект ЭЛТ-монитора (сканлайны) */
+    body::before {
+      content: " ";
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    .terminal-container {
+      max-width: 850px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .term-header {
+      border-bottom: 1px solid #005522;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      color: #008833;
+      font-size: 0.8rem;
+    }
+
+    .output {
+      flex: 1;
+      overflow-y: auto;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .line { margin-bottom: 0.5rem; }
+    .dim { color: #007733; }
+    .alert { color: #ff2a2a; }
+    .gold { color: #f5a623; }
+    .white { color: #fff; }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid #003311;
+      padding-top: 1rem;
+    }
+
+    .prompt {
+      color: #00ff66;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    #cmdInput {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      flex: 1;
+      outline: none;
+    }
+
+    .back-link {
+      margin-top: 1.5rem;
+      text-align: right;
+      font-size: 0.75rem;
+    }
+    .back-link a {
+      color: #005522;
+      text-decoration: none;
+    }
+    .back-link a:hover {
+      color: #00ff66;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="terminal-container">
+    <div class="term-header">
+      <span>DAMN INTERACTIVE // OS v0.21.4</span>
+      <span>NODE: SCHOOL_SECTOR_01</span>
+    </div>
+
+    <div class="output" id="termOutput">
+      <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
+      <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
+      <div class="line">----------------------------------------------------</div>
+      <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
+      <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
+      <div class="line">----------------------------------------------------</div>
+    </div>
+
+    <div class="input-row">
+      <span class="prompt">guest@damn-term:~$</span>
+      <input type="text" id="cmdInput" autofocus autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="back-link">
+      <a href="index.html">[ ВЕРНУТЬСЯ В ОБЩИЙ ДОСТУП ]</a>
+    </div>
+  </div>
+
+  <script>
+    const output = document.getElementById('termOutput');
+    const input = document.getElementById('cmdInput');
+
+    // База команд и секретных паролей
+    const commands = {
+      help: `
+Доступные команды:
+  <span class="gold">help</span>       - Вызов этой справки
+  <span class="gold">status</span>     - Текущий статус проектов студии
+  <span class="gold">creators</span>   - Данные об основателях
+  <span class="gold">clear</span>      - Очистить терминал
+  <span class="alert">[КОД]</span>      - Ввод найденного пароля или шифра из записок
+`,
+      status: `
+[СТАТУС ПРОДАКШНА]
+• Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Камера: Redmi Note 10 Pro)
+• Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // Время: 4 часа)
+• Project 21: В ПРОИЗВОДСТВЕ // Уровень опасности: МАКСИМАЛЬНЫЙ
+• Локации: Школьный комплекс и прилегающая территория
+`,
+      creators: `
+[ДОСТУП К ДОСЬЕ]
+• k1zo      - Инициатор, режиссура, каркас продакшна
+• mixp1ezz  - Полевой исполнитель, тактика, динамика
+`,
+      // Секретные коды для школьного квеста:
+      "21": `
+<span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 <<<</span>
+"Ты думаешь, карты сдаются случайно? 
+В этой комнате нет правил, кроме одного: тот, кто набрал больше 21, больше никогда не покинет подвал. 
+Твой палец на гильотине. Ставь фишку."
+<span class="dim">// ПОДСКАЗКА ДЛЯ ПОИСКА: Ищи следующую метку возле кабинета на 2 этаже.</span>
+`,
+      "school": `
+<span class="gold">>>> СЕКТОР "ШКОЛА" <<<</span>
+Все события начались в этих коридорах. Призрак забитого уборщика всё ещё помнит каждого. Не оставайся после уроков один.
+`,
+      "cleaner": `
+<span class="alert">>>> АРХИВ УБОРЩИКА <<<</span>
+"Сорви с него маску. Но будь готов увидеть то, что заставит тебя вогнать нож в самого себя."
+`
+    };
+
+    function printLine(html) {
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = html;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const val = input.value.trim().toLowerCase();
+        if (!val) return;
+
+        printLine(`<span class="prompt">guest@damn-term:~$</span> <span class="white">${input.value}</span>`);
+
+        if (val === 'clear') {
+          output.innerHTML = '';
+        } else if (commands[val]) {
+          printLine(commands[val]);
+        } else {
+          printLine(`<span class="alert">ОШИБКА: Команда или ключ "${input.value}" не распознан. Доступ запрещен.</span>`);
+        }
+
+        input.value = '';
+        output.scrollTop = output.scrollHeight;
+      }
+    });
+
+    // Держать фокус на вводе
+    document.addEventListener('click', () => input.focus());
+  </script>
+</body>
+</html>
