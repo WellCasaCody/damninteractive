@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Команда // damn interactive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070708;
+      --card-bg: #0f1012;
+      --border: #202226;
+      --text: #e6e6e6;
+      --text-dim: #8b9099;
+      --accent: #ff2a2a;
+      --green: #00ff66;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7, 7, 8, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { font-weight: 700; color: #fff; text-decoration: none; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+
+    main { max-width: 950px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+    .page-title { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .page-desc { color: var(--text-dim); margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+
+    /* Сетка досье */
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .dossier-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .dossier-card:hover { border-color: #444; }
+
+    .avatar-box {
+      width: 100%;
+      height: 220px;
+      border-radius: 8px;
+      background: #000;
+      border: 1px solid #272a33;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      color: #555;
+    }
+    .avatar-box img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--green);
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.8rem;
+    }
+
+    .dossier-name {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 0.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .dossier-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+    }
+
+    .meta-list {
+      list-style: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      border-top: 1px solid #1a1c22;
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .meta-list span { color: #fff; }
+
+    .dossier-text {
+      color: #b5bac4;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-top: 1.2rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 3rem 1.5rem;
+      text-align: center; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--text-dim); margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="brand">damn interactive</a>
+    <div class="nav-links">
+      <a href="index.html">Главная</a>
+      <a href="projects.html">Фильмы</a>
+      <a href="gear.html">Сетап</a>
+      <a href="about.html" style="color: #fff;">О нас</a>
+    </div>
+  </nav>
+
+  <main>
+    <h1 class="page-title">Команда // Досье</h1>
+    <p class="page-desc">Два человека. Полный цикл производства: от первой строчки сценария до финального рендера.</p>
+
+    <div class="dossier-grid">
+      
+      <!-- k1zo -->
+      <div class="dossier-card">
+        <div class="avatar-box">
+          <img src="k1zo.png" alt="k1zo" onerror="this.style.display='none'; this.parentElement.innerText='[ ARCHIVE: k1zo ]';" />
+        </div>
+        <span class="status-badge">● LEAD / ACTIVE</span>
+        <h2 class="dossier-name">k1zo</h2>
+        <div class="dossier-role">Основатель // Режиссёр // Визионер</div>
+
+        <ul class="meta-list">
+          <li>Профиль: <span>Режиссура, сценарий, монтаж, съёмка</span></li>
+          <li>Базовый сетап: <span>iPhone 17 White, Osmo 8P</span></li>
+          <li>Статус в студии: <span>Главное ядро продакшна</span></li>
+        </ul>
+
+        <p class="dossier-text">
+          Человек, на котором держится весь каркас Damn Interactive. Отвечает за общую концепцию, написание сценариев, постановку кадров, свет, цветокоррекцию и пост-продакшн. Превращает локации школьных коридоров и крыльца в плотные триллеры.
+        </p>
+      </div>
+
+      <!-- mixp1ezz -->
+      <div class="dossier-card">
+        <div class="avatar-box">
+          <img src="mixp1ezz.png" alt="mixp1ezz" onerror="this.style.display='none'; this.parentElement.innerText='[ ARCHIVE: mixp1ezz ]';" />
+        </div>
+        <span class="status-badge">● CO-OP / ACTIVE</span>
+        <h2 class="dossier-name">mixp1ezz</h2>
+        <div class="dossier-role">Актёр // Оператор // Второй мозг</div>
+
+        <ul class="meta-list">
+          <li>Профиль: <span>Актёрская игра, динамическая съёмка, брейншторм</span></li>
+          <li>Боевой опыт: <span>«Уборщик», «Уборщик 2»</span></li>
+          <li>Статус в студии: <span>Лицо в кадре & полевой оператор</span></li>
+        </ul>
+
+        <p class="dossier-text">
+          Главный полевой боец студии. Выдаёт чистый саспенс и динамику перед камерой, берёт на себя сложные дубли на съёмках от первого лица и штурмует самые безумные сюжетные повороты и идеи для новых проектов.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 DAMN INTERACTIVE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</p>
+  </footer>
+
+</body>
+</html>
