@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>АРХИВ СИСТЕМЫ // ДОСТУП ОГРАНИЧЕН</title>
+  <style>
+    :root {
+      --terminal-green: #00ff66;
+      --bg: #050805;
+      --glitch-color: #ff3333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--terminal-green);
+      font-family: "Courier New", Courier, monospace;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Эффект ЭЛТ-монитора (сканлайны) */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 2;
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+    }
+
+    .terminal-box {
+      max-width: 650px;
+      width: 100%;
+      background: rgba(0, 20, 5, 0.85);
+      border: 1px solid var(--terminal-green);
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+      padding: 2rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .header-log {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+      border-bottom: 1px dashed var(--terminal-green);
+      padding-bottom: 1rem;
+    }
+
+    .warning {
+      color: var(--glitch-color);
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .prompt-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    input[type="text"] {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--terminal-green);
+      color: var(--terminal-green);
+      font-family: inherit;
+      font-size: 1.1rem;
+      padding: 0.3rem;
+      width: 100%;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    button {
+      background: var(--terminal-green);
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    #result-box {
+      margin-top: 1.5rem;
+      line-height: 1.5;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="terminal-box">
+    <div class="header-log">
+       СИСТЕМА ВИДЕОНАБЛЮДЕНИЯ И УЧЁТА // УЗЕЛ: ШКОЛА_СЕКТОР_B<br>
+       СТАТУС: ВНЕШНИЙ ЗАПРОС ПЕРЕХВАЧЕН<br>
+       ВРЕМЯ: <span id="clock">--:--:--</span>
+    </div>
+
+    <div class="warning">
+      Внимание: Требуется уровень допуска 2.
+    </div>
+
+    <p>Введите служебный код или фамилию дежурного для расшифровки протокола:</p>
+
+    <div class="prompt-line">
+      <span>&gt;</span>
+      <input type="text" id="passInput" placeholder="КОД..." autocomplete="off" />
+    </div>
+
+    <button onclick="checkPass()">ОТПРАВИТЬ ЗАПРОС</button>
+
+    <div id="result-box"></div>
+  </div>
+
+  <script>
+    // Часы реального времени
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
+    }, 1000);
+
+    // Логика проверки пароля
+    function checkPass() {
+      const input = document.getElementById('passInput').value.trim().toLowerCase();
+      const result = document.getElementById('result-box');
+      result.style.display = "block";
+
+      // ПАРОЛЬ 1: например, номер кабинета "404" или "1984"
+      if (input === "404" || input === "кабинет 404") {
+        result.style.color = "#00ff66";
+        result.innerHTML = `
+          <strong>[ДОСТУП РАЗРЕШЕН]</strong><br><br>
+          Протокол №12-Б разблокирован.<br>
+          <em>«Кабинет на третьем этаже опечатан с пятницы. Ключ не оставлять на вахте. Запись с камеры в рекреации повреждена...»</em><br><br>
+          <strong>Следующая зацепка:</strong> Ищи метку под батареей у кабинета физики.
+        `;
+      } 
+      // ПАРОЛЬ 2: damn
+      else if (input === "damn") {
+        result.style.color = "#00ff66";
+        result.innerHTML = `
+          <strong>[РЕЖИМ РАЗРАБОТЧИКА]</strong><br>
+          Damn Interactive // Наблюдение активно. Твои действия фиксируются.
+        `;
+      } 
+      // НЕВЕРНЫЙ КОД
+      else {
+        result.style.color = "#ff3333";
+        result.innerHTML = `
+          <strong>[ОШИБКА ДОСТУПА]</strong><br>
+          Неверный идентификатор. Попытка зарегистрирована в журнале охраны.
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
