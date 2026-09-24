@@ -2,20 +2,20 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DAMN-OS // BOOT SEQUENCE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DAMN-OS // SECURE TERMINAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
+    
+    html, body {
+      height: 100%;
+      height: 100dvh;
       background-color: #000;
       color: #ccc;
       font-family: 'JetBrains Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       position: relative;
       overflow: hidden;
       user-select: none;
@@ -32,7 +32,7 @@
       z-index: 999;
     }
 
-    /* ЭКРАН ВЫКЛЮЧЕННОГО ПК */
+    /* 1. ЭКРАН ВЫКЛЮЧЕННОГО ПК */
     #powerScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -43,9 +43,16 @@
     .monitor-dark {
       flex: 1;
       background: #020202;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 1rem;
     }
     .pc-case {
-      width: 90px;
+      width: 100px;
       background: #111;
       border-left: 2px solid #222;
       box-shadow: inset 5px 0 15px rgba(0,0,0,0.8);
@@ -55,11 +62,14 @@
       justify-content: center;
       position: relative;
     }
-    @media (max-width: 600px) { .pc-case { width: 70px; } }
+    @media (max-width: 600px) {
+      .pc-case { width: 75px; }
+      .monitor-dark { display: none; }
+    }
 
     .power-btn-wrapper { text-align: center; }
     .power-btn {
-      width: 44px; height: 44px;
+      width: 48px; height: 48px;
       border-radius: 50%;
       background: #0a0a0a;
       border: 2px solid #333;
@@ -67,90 +77,87 @@
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       color: #555;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .power-btn:hover {
+    .power-btn:hover, .power-btn:active {
       border-color: #777;
       color: #ff2a2a;
       text-shadow: 0 0 8px #ff2a2a;
       box-shadow: inset 0 0 10px #000, 0 0 15px rgba(255, 42, 42, 0.4);
     }
-    .btn-label { margin-top: 10px; font-size: 0.6rem; color: #555; letter-spacing: 2px; }
+    .btn-label { margin-top: 10px; font-size: 0.65rem; color: #666; letter-spacing: 2px; }
 
-    /* ЭКРАН ЗАГРУЗКИ (POST) */
+    /* 2. ЭКРАН POST-ЗАГРУЗКИ */
     #bootScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background: #000;
       z-index: 50;
-      padding: 1.5rem;
+      padding: 1rem;
       display: none;
-      font-size: 0.85rem;
-      line-height: 1.45;
+      font-size: 0.8rem;
+      line-height: 1.4;
       color: #bbb;
+      overflow-y: auto;
     }
-    .boot-line { margin-bottom: 0.2rem; }
+    .boot-line { margin-bottom: 0.2rem; word-break: break-all; }
 
-    /* Логотип ASUS в правом углу */
     .asus-logo-box {
       position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
+      top: 1rem;
+      right: 1rem;
       border: 2px solid #3a4b66;
       background: #060a12;
-      padding: 10px 14px;
+      padding: 6px 10px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0, 102, 255, 0.15);
     }
     .asus-logo-title {
-      font-size: 1.3rem;
+      font-size: 1rem;
       font-weight: 700;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       color: #fff;
       font-family: sans-serif;
       border-bottom: 1px solid #3a4b66;
       padding-bottom: 2px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .asus-logo-sub {
-      font-size: 0.55rem;
-      color: #8da2c4;
-      letter-spacing: 1px;
-    }
+    .asus-logo-sub { font-size: 0.45rem; color: #8da2c4; }
 
-    /* QTE плашка для входа в BIOS */
     #qtePrompt {
       display: none;
-      position: absolute;
-      bottom: 2rem;
+      position: fixed;
+      bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(255, 42, 42, 0.15);
+      background: #1a0505;
       border: 1px solid #ff2a2a;
       color: #ff5555;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
       cursor: pointer;
       animation: blink 0.4s infinite alternate;
       border-radius: 4px;
+      text-align: center;
+      width: 90%;
+      max-width: 360px;
+      z-index: 80;
     }
-    @keyframes blink {
-      from { opacity: 0.5; }
-      to { opacity: 1; }
-    }
+    @keyframes blink { from { opacity: 0.6; } to { opacity: 1; } }
 
-    /* СИНИЙ BIOS SETUP UTILITY */
+    /* 3. СИНИЙ BIOS SETUP */
     #biosScreen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background: #0000aa;
       color: #ffffff;
       z-index: 60;
-      padding: 1.5rem;
+      padding: 1rem;
       display: none;
       flex-direction: column;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      overflow-y: auto;
     }
     .bios-header {
       background: #aaaaaa;
@@ -158,46 +165,36 @@
       text-align: center;
       font-weight: bold;
       padding: 2px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
     .bios-grid {
       display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      gap: 1rem;
       border: 2px solid #aaaaaa;
-      padding: 1rem;
+      padding: 0.8rem;
       flex: 1;
-    }
-    @media (max-width: 768px) {
-      .bios-grid { grid-template-columns: 1fr; }
     }
     .bios-section h3 {
       color: #ffff55;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       border-bottom: 1px dashed #aaaaaa;
       padding-bottom: 4px;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.6rem;
     }
     .bios-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 0.4rem;
-      font-size: 0.82rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.75rem;
     }
     .bios-val { color: #ffff55; }
-    .bios-help {
-      border: 1px solid #aaaaaa;
-      padding: 0.8rem;
-      font-size: 0.78rem;
-      color: #eee;
-      background: #000088;
-    }
     .bios-footer {
       background: #aaaaaa;
       color: #0000aa;
-      padding: 4px 8px;
-      margin-top: 1rem;
-      font-size: 0.78rem;
+      padding: 6px;
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -206,48 +203,56 @@
       background: #0000aa;
       color: #fff;
       border: 1px solid #fff;
-      padding: 2px 8px;
+      padding: 4px 8px;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.75rem;
     }
 
-    /* ОСНОВНОЙ ТЕРМИНАЛ DAMN-OS */
+    /* 4. ОСНОВНОЙ ТЕРМИНАЛ DAMN-OS */
     #terminalScreen {
       display: none;
       flex-direction: column;
-      flex: 1;
-      padding: 1.5rem;
+      height: 100%;
+      height: 100dvh;
+      padding: 1rem;
       background: #050608;
       color: #00ff66;
       opacity: 0;
-      transition: opacity 0.5s ease-in;
-    }
-    .terminal-container {
-      max-width: 850px;
-      width: 100%;
-      margin: 0 auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      transition: opacity 0.4s ease-in;
     }
     .term-header {
       border-bottom: 1px solid #005522;
-      padding-bottom: 1rem;
-      margin-bottom: 1.5rem;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.8rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       color: #008833;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
+    .term-btn-exit {
+      background: transparent;
+      border: 1px solid #005522;
+      color: #00ff66;
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 0.7rem;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .term-btn-exit:hover { background: #002211; }
+
     .output {
       flex: 1;
       overflow-y: auto;
-      line-height: 1.6;
-      font-size: 0.95rem;
+      line-height: 1.5;
+      font-size: 0.85rem;
       word-break: break-word;
+      padding-right: 4px;
+      -webkit-overflow-scrolling: touch;
     }
-    .line { margin-bottom: 0.5rem; }
+    .line { margin-bottom: 0.4rem; }
     .dim { color: #007733; }
     .alert { color: #ff2a2a; }
     .gold { color: #f5a623; }
@@ -256,31 +261,59 @@
     .input-row {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
       border-top: 1px solid #003311;
-      padding-top: 1rem;
+      padding-top: 0.6rem;
+      background: #050608;
     }
-    .prompt { color: #00ff66; font-weight: bold; }
+    .prompt { color: #00ff66; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
     #cmdInput {
       background: transparent;
       border: none;
       color: #fff;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem;
+      font-size: 0.9rem;
       flex: 1;
       outline: none;
+      min-width: 0;
     }
-    .back-link { margin-top: 1.5rem; text-align: right; font-size: 0.75rem; }
-    .back-link a { color: #005522; text-decoration: none; }
-    .back-link a:hover { color: #00ff66; }
+    .btn-submit-mobile {
+      background: #003311;
+      border: 1px solid #00ff66;
+      color: #00ff66;
+      font-family: inherit;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .btn-submit-mobile { display: block; }
+    }
+
+    .term-footer-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.7rem;
+      color: #006622;
+    }
+    .term-footer-links a { color: #007733; text-decoration: none; }
+    .term-footer-links a:hover { color: #00ff66; }
   </style>
 </head>
 <body>
 
   <!-- 1. Экран выключенного ПК -->
   <div id="powerScreen">
-    <div class="monitor-dark"></div>
+    <div class="monitor-dark">
+      <div>
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🖥️</div>
+        СИСТЕМА ОТКЛЮЧЕНА.<br>НАЖМИТЕ КНОПКУ ПИТАНИЯ СПРАВА.
+      </div>
+    </div>
     <div class="pc-case">
       <div class="power-btn-wrapper">
         <div class="power-btn" id="powerBtn" title="Включить питание">⏻</div>
@@ -293,72 +326,62 @@
   <div id="bootScreen">
     <div class="asus-logo-box" id="asusLogo">
       <div class="asus-logo-title">ASUS</div>
-      <div class="asus-logo-sub">P4P800 DELUXE // AI SERIES</div>
+      <div class="asus-logo-sub">P4P800 DELUXE</div>
     </div>
     <div id="bootText"></div>
-    <div id="qtePrompt" onclick="triggerBios()">[QTE] ЖМИ [DEL] ИЛИ КЛИКАЙ СЮДА ДЛЯ ВХОДА В BIOS!</div>
+    <div id="qtePrompt" onclick="triggerBios()">[QTE] ЖМИ [DEL] ИЛИ ТАПНИ ДЛЯ BIOS!</div>
   </div>
 
   <!-- 3. Синий BIOS Setup -->
   <div id="biosScreen">
-    <div class="bios-header">ROM PCI/ISA BIOS (P4P800-DAMN) - CMOS SETUP UTILITY</div>
+    <div class="bios-header">ROM PCI/ISA BIOS (P4P800-DAMN) - CMOS SETUP</div>
     <div class="bios-grid">
       <div class="bios-section">
-        <h3>HARDWARE MONITOR & STATUS</h3>
-        <div class="bios-row"><span>CPU Type:</span><span class="bios-val">Intel Pentium 4 (Northwood 3.0GHz)</span></div>
-        <div class="bios-row"><span>Installed RAM:</span><span class="bios-val">1024 MB DDR-400 Dual-Channel</span></div>
-        <div class="bios-row"><span>Primary IDE:</span><span class="bios-val">50.0 GB ST350014A (Шумит, но пашет)</span></div>
-        <div class="bios-row"><span>CPU Temperature:</span><span class="bios-val" style="color: #ff5555;">89°C (КПТ-8 засохла в камень)</span></div>
-        <div class="bios-row"><span>CPU Fan Speed:</span><span class="bios-val">4920 RPM (Турбина пылесоса)</span></div>
-        <div class="bios-row"><span>Vcore Voltage:</span><span class="bios-val">1.62 V (На грани отвала)</span></div>
+        <h3>HARDWARE STATUS</h3>
+        <div class="bios-row"><span>CPU:</span><span class="bios-val">Intel P4 3.00GHz</span></div>
+        <div class="bios-row"><span>RAM:</span><span class="bios-val">1024 MB DDR-400</span></div>
+        <div class="bios-row"><span>Primary IDE:</span><span class="bios-val">50.0 GB Seagate</span></div>
+        <div class="bios-row"><span>CPU Temp:</span><span class="bios-val" style="color: #ff5555;">89°C (КПТ-8 высохла)</span></div>
+        <div class="bios-row"><span>Fan Speed:</span><span class="bios-val">4920 RPM (Турбина)</span></div>
         
-        <h3 style="margin-top: 1rem;">DAMN TUNING CONFIG</h3>
-        <div class="bios-row"><span>Overclocking Mode:</span><span class="bios-val">[EXTREME // NO REGRETS]</span></div>
-        <div class="bios-row"><span>Overheat Shutdown:</span><span class="bios-val">[DISABLED]</span></div>
-        <div class="bios-row"><span>School Bell Filter:</span><span class="bios-val">[IGNORED]</span></div>
-        <div class="bios-row"><span>Boot Priority:</span><span class="bios-val">[MS-DOS 8.0 -> PROJECT 21]</span></div>
-      </div>
-
-      <div class="bios-section">
-        <div class="bios-help">
-          <strong style="color: #ffff55;">Справка системы:</strong><br><br>
-          • Внимание: Процессор разогнан до предела ради рендера короткометражек Damn Interactive.<br><br>
-          • Любые попытки сбросить настройки приведут к принудительному запуску циркулярной пилы.<br><br>
-          • Чтобы выйти в систему, нажмите кнопку снизу или клавишу <strong>F10</strong>.
-        </div>
+        <h3 style="margin-top: 0.8rem;">DAMN TUNING</h3>
+        <div class="bios-row"><span>Overclock:</span><span class="bios-val">[EXTREME]</span></div>
+        <div class="bios-row"><span>Overheat Protec:</span><span class="bios-val">[DISABLED]</span></div>
+        <div class="bios-row"><span>Boot Priority:</span><span class="bios-val">[MS-DOS -> 21]</span></div>
       </div>
     </div>
     <div class="bios-footer">
-      <span>F1: Help  |  ESC: Exit  |  Enter: Select</span>
-      <button class="btn-exit-bios" onclick="exitBiosToDos()">[F10] Сохранить и продолжить загрузку</button>
+      <span>Нажмите кнопку:</span>
+      <button class="btn-exit-bios" onclick="exitBiosToDos()">[F10] Сохранить и выйти в DOS</button>
     </div>
   </div>
 
-  <!-- 4. Основной терминал -->
+  <!-- 4. Основной терминал DAMN-OS -->
   <div id="terminalScreen">
-    <div class="terminal-container">
-      <div class="term-header">
-        <span>DAMN INTERACTIVE // OS v0.21.4</span>
-        <span>NODE: SCHOOL_SECTOR_01</span>
-      </div>
+    <div class="term-header">
+      <span>DAMN INTERACTIVE // OS v0.21.4</span>
+      <button class="term-btn-exit" onclick="exitToSite()">[ ВЫХОД ]</button>
+    </div>
 
-      <div class="output" id="termOutput">
-        <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
-        <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
-        <div class="line">----------------------------------------------------</div>
-        <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
-        <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
-        <div class="line">----------------------------------------------------</div>
-      </div>
+    <div class="output" id="termOutput">
+      <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
+      <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
+      <div class="line">----------------------------------------------------</div>
+      <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
+      <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
+      <div class="line">Для выхода на сайт введите: <span class="gold">exit</span></div>
+      <div class="line">----------------------------------------------------</div>
+    </div>
 
-      <div class="input-row">
-        <span class="prompt">guest@damn-term:~$</span>
-        <input type="text" id="cmdInput" autocomplete="off" spellcheck="false" />
-      </div>
+    <div class="input-row">
+      <span class="prompt">&gt;</span>
+      <input type="text" id="cmdInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="команда..." />
+      <button class="btn-submit-mobile" onclick="handleCommand()">Ввод</button>
+    </div>
 
-      <div class="back-link">
-        <a href="index.html">[ ВЕРНУТЬСЯ В ОБЩИЙ ДОСТУП ]</a>
-      </div>
+    <div class="term-footer-links">
+      <span>NODE: SCHOOL_SECTOR_01</span>
+      <a href="index.html" onclick="exitToSite(); return false;">[ ВЕРНУТЬСЯ НА САЙТ ]</a>
     </div>
   </div>
 
@@ -372,19 +395,23 @@
     const biosScreen = document.getElementById('biosScreen');
     const terminalScreen = document.getElementById('terminalScreen');
     const cmdInput = document.getElementById('cmdInput');
+    const output = document.getElementById('termOutput');
 
     let inBios = false;
     let biosAllowed = false;
     let bootInterval = null;
 
-    // Гарантированное воспроизведение системного спикера (880Hz)
+    function exitToSite() {
+      window.location.href = "index.html";
+    }
+
+    // Звук спикера
     function playBeep() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
         const ctx = new AudioContext();
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
+        if (ctx.state === 'suspended') ctx.resume();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
@@ -399,20 +426,18 @@
 
         osc.start();
         osc.stop(ctx.currentTime + 0.16);
-      } catch (e) {
-        console.error("Audio error", e);
-      }
+      } catch (e) {}
     }
 
     const postLines = [
       "ASUS P4P800 ACPI BIOS Revision 1019",
       "Copyright (C) 1984-2004, American Megatrends, Inc.",
       "<br>",
-      "Main Processor : Intel(R) Pentium(R) 4 CPU 3.00GHz (800MHz FSB)",
-      "Memory Testing : 1048576K OK (1024MB DDR-400 SDRAM Dual Channel)",
+      "Main Processor : Intel(R) Pentium(R) 4 CPU 3.00GHz",
+      "Memory Testing : 1048576K OK (1024MB DDR-400)",
       "<br>",
-      "Primary IDE Master   : ST350014A Seagate Barracuda 7200.7 50.0 GB",
-      "Secondary IDE Master : ASUS CD-S520/A5 CD-ROM 52x",
+      "Primary IDE Master   : ST350014A Seagate Barracuda 50.0 GB",
+      "Secondary IDE Master : ASUS CD-S520/A5 CD-ROM",
       "<br>",
       "Press DEL to enter SETUP, ESC to skip memory test",
       "Booting from Primary Master...",
@@ -422,7 +447,6 @@
       "<br>",
       "HIMEM is testing extended memory...done.",
       "C:\\> PATH=C:\\DOS;C:\\DAMN_OS",
-      "C:\\> LH C:\\DOS\\SMARTDRV.EXE 2048",
       "C:\\> CD \\DAMN_OS",
       "C:\\DAMN_OS> execute damn_term.exe -auth guest",
       "ESTABLISHING PROTOCOL [SCHOOL_LOCAL_NET]...",
@@ -442,7 +466,6 @@
         if (i < postLines.length) {
           const line = postLines[i];
 
-          // Окно для QTE
           if (line.includes("Press DEL to enter SETUP")) {
             biosAllowed = true;
             qtePrompt.style.display = 'block';
@@ -454,32 +477,30 @@
             bootText.innerHTML = "";
             asusLogo.style.display = "none";
             i++;
-            bootInterval = setTimeout(stepBoot, 700);
+            bootInterval = setTimeout(stepBoot, 600);
             return;
           }
 
           bootText.innerHTML += `<div class="boot-line">${line}</div>`;
-          const delay = line.includes("...") ? 450 : Math.floor(Math.random() * 90) + 40;
+          bootScreen.scrollTop = bootScreen.scrollHeight;
+          const delay = line.includes("...") ? 400 : Math.floor(Math.random() * 80) + 30;
           i++;
           bootInterval = setTimeout(stepBoot, delay);
         } else {
-          // Старт терминала
           setTimeout(() => {
             bootScreen.style.display = 'none';
             terminalScreen.style.display = 'flex';
-            document.body.style.overflowY = 'auto';
             setTimeout(() => {
               terminalScreen.style.opacity = '1';
               cmdInput.focus();
             }, 100);
-          }, 500);
+          }, 400);
         }
       }
 
       stepBoot();
     });
 
-    // Обработка клавиш (Del для BIOS, F10 для выхода)
     window.addEventListener('keydown', (e) => {
       if ((e.key === 'Delete' || e.key === 'Del') && biosAllowed && !inBios) {
         triggerBios();
@@ -506,55 +527,81 @@
       bootText.innerHTML = `
         <div class="boot-line">Saving configuration to CMOS... OK</div>
         <div class="boot-line">Starting MS-DOS 8.0...</div>
-        <div class="boot-line"><br></div>
-        <div class="boot-line">HIMEM is testing extended memory...done.</div>
-        <div class="boot-line">C:\\> CD \\DAMN_OS</div>
         <div class="boot-line">C:\\DAMN_OS> execute damn_term.exe -auth guest</div>
-        <div class="boot-line">ESTABLISHING PROTOCOL [SCHOOL_LOCAL_NET]...</div>
         <div class="boot-line">CONNECTED (PORT 21).</div>
         <div class="boot-line">DONE.</div>
       `;
       setTimeout(() => {
         bootScreen.style.display = 'none';
         terminalScreen.style.display = 'flex';
-        document.body.style.overflowY = 'auto';
         setTimeout(() => {
           terminalScreen.style.opacity = '1';
           cmdInput.focus();
         }, 100);
-      }, 700);
+      }, 600);
     }
 
-    /* Логика команд терминала */
-    const output = document.getElementById('termOutput');
+    /* РАСШИРЕННЫЙ СПИСОК КОМАНД */
     const commands = {
       help: `
-Доступные команды:
-  <span class="gold">help</span>       - Вызов этой справки
-  <span class="gold">status</span>     - Текущий статус проектов студии
-  <span class="gold">creators</span>   - Данные об основателях
+<span class="gold">СИСТЕМНЫЕ КОМАНДЫ:</span>
+  <span class="gold">help</span>       - Справка по терминалу
+  <span class="gold">status</span>     - Текущее состояние проектов
+  <span class="gold">creators</span>   - Личные дела основателей
+  <span class="gold">gear</span>       - Текущий сетап оборудования
+  <span class="gold">films</span>      - Список выпущенных фильмов
+  <span class="gold">vk</span>         - Ссылка на официальное сообщество
+  <span class="gold">whoami</span>     - Кто авторизован в системе
+  <span class="gold">date</span>       - Системное время узла
+  <span class="gold">matrix</span>     - Запуск матрицы данных
+  <span class="gold">reboot</span>     - Перезагрузка системы
   <span class="gold">clear</span>      - Очистить терминал
-  <span class="alert">[КОД]</span>      - Ввод найденного пароля или шифра
+  <span class="gold">exit</span>       - Выход на главный сайт
+  <span class="alert">[КОД]</span>      - Ввод найденного шифра (21, cleaner, school...)
 `,
       status: `
 [СТАТУС ПРОДАКШНА]
 • Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Redmi Note 10 Pro)
 • Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // 4 часа)
-• Project 21: В ПРОИЗВОДСТВЕ // Хронометраж: 2-3 минуты // Ставка: СМЕРТЬ
-• Локации: Школьный сектор и прилегающая территория
+• Project 21: В ПРОИЗВОДСТВЕ // Хронометраж: 2-3 мин // Ставка: СМЕРТЬ
+• Локации: Школьный комплекс и улица перед входом
 `,
       creators: `
 [ДОСТУП К ДОСЬЕ]
-• k1zo      - Инициатор, режиссура, каркас продакшна
-• mixp1ezz  - Полевой исполнитель, тактика, динамика
+• k1zo      - Инициатор, режиссура, каркас продакшна, iPhone 17
+• mixp1ezz  - Полевой исполнитель, тактика, динамика в кадре
 `,
+      gear: `
+[СЕКУЩИЙ СЕКТОР СНАБЖЕНИЯ]
+• iPhone 17 White (Основной боевой аппарат)
+• DJI Osmo Mobile 8P (Взят в августе 2026 // Ждёт Project 21)
+• Redmi Note 10 Pro (В Зале Почёта)
+`,
+      films: `
+[КАТАЛОГ СТУДИИ]
+1. «Уборщик» (2026) — Слэшер / Мистика
+2. «Уборщик 2: Страшно вырубай» (2026) — Психологический триллер
+3. «Project 21» (2026) — Саспенс / Карточная дуэль с циркуляркой
+`,
+      vk: `
+Официальный паблик студии: <a href="https://vk.ru/damninteractive" target="_blank" style="color: #00aaff;">vk.ru/damninteractive</a>
+`,
+      whoami: `
+Пользователь: guest_node_user
+Уровень допуска: RESTRICTED // ARG_PARTICIPANT
+IP-шлюз: SCHOOL_WIFI_INTERNAL
+`,
+      date: `
+Системная дата узла: ${new Date().toLocaleString('ru-RU')}
+`,
+      // СЕКРЕТНЫЕ КОДЫ ДЛЯ КВЕСТА
       "21": `
 <span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 [PROJECT 21] <<<</span>
 "Никаких мелких ставок. Никаких пальцев. 
 По центру стола воет вращающийся диск циркулярной пилы. 
 У тебя ровно три минуты, чтобы переиграть противника, пока лезвие не сдвинется в твою сторону. 
 Берёшь ещё карту или пасуешь?"
-<span class="dim">// ПОДСКАЗКА ДЛЯ ПОИСКА: Ищи следующую метку возле кабинета на 2 этаже.</span>
+<span class="dim">// ПОДСКАЗКА: Ищи следующую метку возле кабинета на 2 этаже.</span>
 `,
       "school": `
 <span class="gold">>>> СЕКТОР "ШКОЛА" <<<</span>
@@ -562,7 +609,7 @@
 `,
       "cleaner": `
 <span class="alert">>>> АРХИВ УБОРЩИКА <<<</span>
-"Сорви с него маску. Но будь готов увидеть то, что заставит тебя вогнать нож в самого себя."
+"Сорви с него маску. Но помни: монстр в отражении уничтожит тебя твоими же руками."
 `
     };
 
@@ -574,28 +621,57 @@
       output.scrollTop = output.scrollHeight;
     }
 
+    function runMatrix() {
+      printLine('<span class="dim">// ИНИЦИАЛИЗАЦИЯ ПОТОКА ДАННЫХ...</span>');
+      let count = 0;
+      const matrixInt = setInterval(() => {
+        let chars = "01DAMNINTERACTIVE21XYZ_#!?";
+        let str = "";
+        for (let j = 0; j < 35; j++) {
+          str += chars.charAt(Math.floor(Math.random() * chars.length)) + " ";
+        }
+        printLine(`<span style="color: #00aa44; font-size: 0.75rem;">${str}</span>`);
+        count++;
+        if (count > 12) {
+          clearInterval(matrixInt);
+          printLine('<span class="white">// ПОТОК СИНХРОНИЗИРОВАН.</span>');
+        }
+      }, 80);
+    }
+
+    function handleCommand() {
+      const val = cmdInput.value.trim().toLowerCase();
+      if (!val) return;
+
+      printLine(`<span class="prompt">&gt;</span> <span class="white">${cmdInput.value}</span>`);
+
+      if (val === 'clear') {
+        output.innerHTML = '';
+      } else if (val === 'exit' || val === 'quit') {
+        printLine('<span class="dim">// ВЫХОД В ОБЩИЙ ДОСТУП...</span>');
+        setTimeout(exitToSite, 500);
+      } else if (val === 'reboot' || val === 'restart') {
+        location.reload();
+      } else if (val === 'matrix') {
+        runMatrix();
+      } else if (commands[val]) {
+        printLine(commands[val]);
+      } else {
+        printLine(`<span class="alert">ОШИБКА: Команда или ключ "${cmdInput.value}" не распознан. Введите help.</span>`);
+      }
+
+      cmdInput.value = '';
+      output.scrollTop = output.scrollHeight;
+    }
+
     cmdInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        const val = cmdInput.value.trim().toLowerCase();
-        if (!val) return;
-
-        printLine(`<span class="prompt">guest@damn-term:~$</span> <span class="white">${cmdInput.value}</span>`);
-
-        if (val === 'clear') {
-          output.innerHTML = '';
-        } else if (commands[val]) {
-          printLine(commands[val]);
-        } else {
-          printLine(`<span class="alert">ОШИБКА: Команда или ключ "${cmdInput.value}" не распознан. Доступ запрещен.</span>`);
-        }
-
-        cmdInput.value = '';
-        output.scrollTop = output.scrollHeight;
+        handleCommand();
       }
     });
 
-    document.addEventListener('click', () => {
-      if (terminalScreen.style.display === 'flex') {
+    document.addEventListener('click', (e) => {
+      if (terminalScreen.style.display === 'flex' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
         cmdInput.focus();
       }
     });
