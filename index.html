@@ -179,6 +179,7 @@
     <ul class="nav-links">
       <li><a href="projects.html">Фильмы и проекты</a></li>
       <li><a href="gear.html">Сетап</a></li>
+      <li><a href="about.html">О нас</a></li>
       <li><button class="contact-btn" onclick="openModal()">Контакты</button></li>
     </ul>
   </nav>
@@ -236,12 +237,9 @@
       <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">По вопросам съемок, предложений и новостей</p>
       
       <div class="contact-actions">
-        <!-- Паблик ВК -->
         <a href="https://vk.ru/damninteractive" target="_blank" class="btn-vk">
           Сообщество ВКонтакте ➔
         </a>
-
-        <!-- Копирование почты -->
         <div class="contact-copy-box" onclick="copyEmail()">
           <span id="mailText">production@damninteractive.ru</span>
           <span id="copyHint" style="display: block; font-size: 0.75rem; color: #888; margin-top: 4px;">(нажми, чтобы скопировать)</span>
@@ -275,7 +273,6 @@
       });
     }
 
-    // Автоматический пуск видео
     window.addEventListener('DOMContentLoaded', () => {
       const vid = document.getElementById('introVideo');
       if (vid) {
