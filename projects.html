@@ -96,17 +96,32 @@
     .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; }
     .film-card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; }
     .film-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
-    .film-badge {
-      display: inline-block;
+    
+    .film-meta-box {
       margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .film-badge {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.75rem;
       color: #e6e6e6;
       background: #18191c;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
-      align-self: flex-start;
       border: 1px solid #2a2c33;
+    }
+
+    .loc-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #8b9099;
+      background: #121316;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px dashed #333;
     }
 
     footer {
@@ -156,7 +171,10 @@
             Дебютная работа студии. История парня, которого жестоко забили насмерть толпой. Но смерть не стала концом: вернувшись бестелесным мстительным призраком, он методично и хладнокровно уничтожает каждого своего обидчика.
           </p>
         </div>
-        <span class="film-badge">Первый проект студии</span>
+        <div class="film-meta-box">
+          <span class="film-badge">Redmi Note 10 Pro</span>
+          <span class="loc-tag">📍 Локация: Школа</span>
+        </div>
       </div>
 
       <!-- Уборщик 2 -->
@@ -168,7 +186,10 @@
             Тот самый фильм про вред веществ. Главный герой просыпается, закидывается колёсами и натыкается на остывающий труп. Пытаясь скрыться от маньяка, он в итоге настигает его и срывает маску — под ней оказывается его собственное лицо. Поняв, что всё это время преследовал сам себя, он всаживает нож себе в живот.
           </p>
         </div>
-        <span class="film-badge">Снято за 4 часа</span>
+        <div class="film-meta-box">
+          <span class="film-badge">iPhone 17 // 4 часа</span>
+          <span class="loc-tag">📍 Локация: Школа и улица перед ней</span>
+        </div>
       </div>
 
     </div>
