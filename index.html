@@ -15,6 +15,7 @@
       --text: #e6e6e6;
       --text-dim: #8b9099;
       --accent: #ff2a2a;
+      --vk: #0077ff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -132,20 +133,42 @@
       position: absolute; top: 1rem; right: 1rem;
       background: transparent; border: none; color: #777; font-size: 1.5rem; cursor: pointer;
     }
+    
+    .contact-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+    }
+
     .contact-copy-box {
       background: #1e2025; color: #fff;
-      padding: 1rem; margin-top: 1.2rem;
+      padding: 0.9rem;
       border-radius: 6px; border: 1px solid #2d3038;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
       cursor: pointer; transition: all 0.2s;
     }
     .contact-copy-box:hover { background: #2a2d36; border-color: #555; }
+
+    .btn-vk {
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      background: #0077ff; color: #fff; text-decoration: none;
+      padding: 0.85rem; border-radius: 6px; font-weight: 600;
+      font-size: 0.95rem; transition: background 0.2s;
+    }
+    .btn-vk:hover { background: #0066dd; }
 
     footer {
       border-top: 1px solid var(--border); padding: 3rem 1.5rem;
       text-align: center; font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem; color: var(--text-dim);
     }
+    .footer-links {
+      margin-top: 0.75rem;
+      display: flex; justify-content: center; gap: 1.5rem;
+    }
+    .footer-links a { color: var(--text-dim); text-decoration: none; }
+    .footer-links a:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -210,18 +233,30 @@
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModal()">×</button>
       <h3 style="margin-bottom: 0.5rem; font-size: 1.3rem;">Связь с нами</h3>
-      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">По вопросам коллабораций, съемок и предложений</p>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">По вопросам съемок, предложений и новостей</p>
       
-      <div class="contact-copy-box" onclick="copyEmail()">
-        <span id="mailText">production@damninteractive.ru</span>
-        <span id="copyHint" style="display: block; font-size: 0.75rem; color: #888; margin-top: 6px;">(нажми, чтобы скопировать)</span>
+      <div class="contact-actions">
+        <!-- Паблик ВК -->
+        <a href="https://vk.ru/damninteractive" target="_blank" class="btn-vk">
+          Сообщество ВКонтакте ➔
+        </a>
+
+        <!-- Копирование почты -->
+        <div class="contact-copy-box" onclick="copyEmail()">
+          <span id="mailText">production@damninteractive.ru</span>
+          <span id="copyHint" style="display: block; font-size: 0.75rem; color: #888; margin-top: 4px;">(нажми, чтобы скопировать)</span>
+        </div>
       </div>
     </div>
   </div>
 
   <footer>
     <p>© 2026 DAMN INTERACTIVE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</p>
-    <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #555;">production@damninteractive.ru</p>
+    <div class="footer-links">
+      <a href="https://vk.ru/damninteractive" target="_blank">VK: damninteractive</a>
+      <span>•</span>
+      <a href="mailto:production@damninteractive.ru">production@damninteractive.ru</a>
+    </div>
   </footer>
 
   <script>
