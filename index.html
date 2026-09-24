@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>АРХИВ СИСТЕМЫ // ДОСТУП ОГРАНИЧЕН</title>
+  <title>damn interactive // независимая студия</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --terminal-green: #00ff66;
-      --bg: #050805;
-      --glitch-color: #ff3333;
+      --bg: #070708;
+      --card-bg: #0f1012;
+      --border: #202226;
+      --text: #e6e6e6;
+      --text-dim: #7d828a;
+      --accent: #ff2a2a;
+      --accent-glow: rgba(255, 42, 42, 0.25);
     }
 
     * {
@@ -19,165 +26,378 @@
 
     body {
       background-color: var(--bg);
-      color: var(--terminal-green);
-      font-family: "Courier New", Courier, monospace;
-      padding: 2rem;
-      min-height: 100vh;
+      color: var(--text);
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Навигация */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 7, 8, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: lowercase;
+      font-size: 1.15rem;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    /* Hero / Видео-лого */
+    header {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at top, #14161a 0%, var(--bg) 75%);
+    }
+
+    .video-wrapper {
+      max-width: 520px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      background: #000;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .tagline {
+      margin-top: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    main {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    /* Заголовки разделов */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-head h2 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .section-head .line {
+      flex-grow: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Флагманский блок Project 21 */
+    .featured-project {
+      background: linear-gradient(145deg, #150808 0%, #0d0e11 100%);
+      border: 1px solid #3d1414;
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 4rem;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 0 25px var(--accent-glow);
     }
 
-    /* Эффект ЭЛТ-монитора (сканлайны) */
-    body::before {
-      content: " ";
-      display: block;
-      position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      z-index: 2;
-      background-size: 100% 3px, 6px 100%;
-      pointer-events: none;
-    }
-
-    .terminal-box {
-      max-width: 650px;
-      width: 100%;
-      background: rgba(0, 20, 5, 0.85);
-      border: 1px solid var(--terminal-green);
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-      padding: 2rem;
-      position: relative;
-      z-index: 3;
-    }
-
-    .header-log {
-      font-size: 0.85rem;
-      line-height: 1.4;
-      margin-bottom: 1.5rem;
-      opacity: 0.8;
-      border-bottom: 1px dashed var(--terminal-green);
-      padding-bottom: 1rem;
-    }
-
-    .warning {
-      color: var(--glitch-color);
+    .badge-wip {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
       font-weight: bold;
-      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
       margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .featured-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .featured-sub {
+      color: var(--accent);
+      font-weight: 600;
       letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      margin-bottom: 1.25rem;
     }
 
-    .prompt-line {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
+    .featured-desc {
+      font-size: 1.05rem;
+      color: #b0b4ba;
+      max-width: 650px;
+      margin-bottom: 1.5rem;
     }
 
-    input[type="text"] {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid var(--terminal-green);
-      color: var(--terminal-green);
-      font-family: inherit;
-      font-size: 1.1rem;
-      padding: 0.3rem;
-      width: 100%;
-      outline: none;
+    .featured-quote {
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    /* Каталог проектов */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      transition: all 0.25s ease;
+    }
+
+    .card:hover {
+      border-color: #40444c;
+      transform: translateY(-3px);
+    }
+
+    .card-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
       text-transform: uppercase;
     }
 
-    button {
-      background: var(--terminal-green);
-      color: #000;
-      border: none;
-      padding: 0.5rem 1rem;
-      font-family: inherit;
-      font-weight: bold;
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* Блок О нас */
+    .about-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      margin-bottom: 4rem;
+    }
+
+    @media (max-width: 768px) {
+      .about-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .about-img-box {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+
+    .about-img-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: grayscale(20%) contrast(110%);
+    }
+
+    .about-text h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .about-text p {
+      color: #a5abb5;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Футер */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .secret-trigger {
       cursor: pointer;
-      margin-top: 1rem;
-      transition: opacity 0.2s;
-    }
-
-    button:hover {
-      opacity: 0.85;
-    }
-
-    #result-box {
-      margin-top: 1.5rem;
-      line-height: 1.5;
-      display: none;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="terminal-box">
-    <div class="header-log">
-       СИСТЕМА ВИДЕОНАБЛЮДЕНИЯ И УЧЁТА // УЗЕЛ: ШКОЛА_СЕКТОР_B<br>
-       СТАТУС: ВНЕШНИЙ ЗАПРОС ПЕРЕХВАЧЕН<br>
-       ВРЕМЯ: <span id="clock">--:--:--</span>
+  <!-- Меню -->
+  <nav>
+    <a href="#" class="brand">damn interactive</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Проекты</a></li>
+      <li><a href="#about">О нас</a></li>
+      <li><a href="mailto:contact@damninteractive.ru">Контакт</a></li>
+    </ul>
+  </nav>
+
+  <!-- Интро -->
+  <header>
+    <div class="video-wrapper">
+      <video autoplay muted playsinline loop>
+        <source src="intro.mp4" type="video/mp4" />
+        damn interactive
+      </video>
     </div>
+    <p class="tagline">// независимое кино, игры и спецпроекты</p>
+  </header>
 
-    <div class="warning">
-      Внимание: Требуется уровень допуска 2.
-    </div>
+  <main>
 
-    <p>Введите служебный код или фамилию дежурного для расшифровки протокола:</p>
+    <!-- Флагман: Project 21 -->
+    <section class="featured-project">
+      <span class="badge-wip">W.I.P. // СКОРО</span>
+      <h1 class="featured-title">Project 21</h1>
+      <div class="featured-sub">Ставка не сыграла</div>
+      <p class="featured-desc">
+        Просыпаешься за столом и вместо работы ты играешь на жизнь. В этой игре всего два игрока, и только один уйдет живым. Психологический триллер о цене азарта, человеческой слабости и фатальных ставках.
+      </p>
+      <div class="featured-quote">
+        «21 очко или пуля. Кто раздает карты?»
+      </div>
+    </section>
 
-    <div class="prompt-line">
-      <span>&gt;</span>
-      <input type="text" id="passInput" placeholder="КОД..." autocomplete="off" />
-    </div>
+    <!-- Сетка проектов -->
+    <section id="projects">
+      <div class="section-head">
+        <h2>Наши проекты</h2>
+        <div class="line"></div>
+      </div>
 
-    <button onclick="checkPass()">ОТПРАВИТЬ ЗАПРОС</button>
+      <div class="projects-grid">
+        <div class="card">
+          <div class="card-type">Короткометражный фильм</div>
+          <h3>Уборщик 1</h3>
+          <p>Первый дебютный проект студии, снятый на энтузиазме. Начало истории и первый опыт работы с кадром.</p>
+        </div>
 
-    <div id="result-box"></div>
-  </div>
+        <div class="card">
+          <div class="card-type">Короткометражный фильм</div>
+          <h3>Уборщик 2</h3>
+          <p>Продолжение истории. Развитие персонажей, более плотная атмосфера и работа над ошибками первой части.</p>
+        </div>
+
+        <div class="card" style="border-color: #3d1414;">
+          <div class="card-type" style="color: var(--accent);">Психологический триллер</div>
+          <h3>Project 21</h3>
+          <p>Флагманский проект студии. Грязная подпольная игра, вдохновленная брутальным выживанием в блэкджеке.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- О студии -->
+    <section id="about">
+      <div class="section-head">
+        <h2>О нас</h2>
+        <div class="line"></div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-img-box">
+          <!-- Картинка с Монокумой: положи файл monokuma.jpg в репозиторий -->
+          <img src="monokuma.jpg" alt="damn interactive workspace" onerror="this.src='https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&q=80'" />
+        </div>
+
+        <div class="about-text">
+          <h3>damn interactive</h3>
+          <p>
+            Это два человека, камера и куча идей, которые мы превращаем в короткий метр.
+          </p>
+          <p>
+            Первые проекты снимали буквально на то, что валялось под рукой, набивая шишки на ходу. Сейчас собираем нормальный сетап, заморачиваемся над светом, пишем чистый звук и делаем упор на напряженную атмосферу.
+          </p>
+          <p style="color: #fff; font-weight: 600;">
+            Делаем кино так, как видим сами. Без лишней духоты и раздутых бюджетов.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 DAMN INTERACTIVE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</p>
+    <p style="margin-top: 0.5rem; opacity: 0.3;">
+      SYS_NODE: <span class="secret-trigger" onclick="triggerARG()">ONLINE_21</span>
+    </p>
+  </footer>
 
   <script>
-    // Часы реального времени
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
-    }, 1000);
+    // Пасхалка в консоли (F12)
+    console.log("%c[DAMN INTERACTIVE // DECK FOUND]", "color: #ff2a2a; font-weight: bold; font-size: 14px;");
+    console.log("Ты ищешь ответы не там. Колода уже перемешана. Первая раздача — в школьном узле: /school-archive.html");
 
-    // Логика проверки пароля
-    function checkPass() {
-      const input = document.getElementById('passInput').value.trim().toLowerCase();
-      const result = document.getElementById('result-box');
-      result.style.display = "block";
-
-      // ПАРОЛЬ 1: например, номер кабинета "404" или "1984"
-      if (input === "404" || input === "кабинет 404") {
-        result.style.color = "#00ff66";
-        result.innerHTML = `
-          <strong>[ДОСТУП РАЗРЕШЕН]</strong><br><br>
-          Протокол №12-Б разблокирован.<br>
-          <em>«Кабинет на третьем этаже опечатан с пятницы. Ключ не оставлять на вахте. Запись с камеры в рекреации повреждена...»</em><br><br>
-          <strong>Следующая зацепка:</strong> Ищи метку под батареей у кабинета физики.
-        `;
-      } 
-      // ПАРОЛЬ 2: damn
-      else if (input === "damn") {
-        result.style.color = "#00ff66";
-        result.innerHTML = `
-          <strong>[РЕЖИМ РАЗРАБОТЧИКА]</strong><br>
-          Damn Interactive // Наблюдение активно. Твои действия фиксируются.
-        `;
-      } 
-      // НЕВЕРНЫЙ КОД
-      else {
-        result.style.color = "#ff3333";
-        result.innerHTML = `
-          <strong>[ОШИБКА ДОСТУПА]</strong><br>
-          Неверный идентификатор. Попытка зарегистрирована в журнале охраны.
-        `;
-      }
+    // Клик по тайному коду внизу
+    function triggerARG() {
+      alert("АРХИВ: Доступ к раздаче открыт. Найди терминал в школе.");
     }
   </script>
 </body>
