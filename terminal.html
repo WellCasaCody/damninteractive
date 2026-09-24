@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DAMN-OS // SECURE TERMINAL</title>
+  <title>DAMN-OS // BOOT SEQUENCE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: #050608;
-      color: #00ff66;
+      background-color: #000;
+      color: #ccc;
       font-family: 'JetBrains Mono', monospace;
-      padding: 1.5rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-x: hidden;
+      overflow-y: hidden; /* Пока грузится, скролла нет */
     }
 
-    /* Эффект ЭЛТ-монитора (сканлайны) */
+    /* Эффект ЭЛТ-монитора (сканлайны) - поверх всего */
     body::before {
       content: " ";
       position: fixed;
@@ -29,9 +29,92 @@
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
       background-size: 100% 3px, 6px 100%;
       pointer-events: none;
-      z-index: 99;
+      z-index: 999;
     }
 
+    /* СОСТОЯНИЕ 1: ВЫКЛЮЧЕННЫЙ КОМП */
+    #powerScreen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #020202;
+      z-index: 100;
+      display: flex;
+    }
+    .monitor-dark {
+      flex: 1;
+      background: #020202;
+    }
+    .pc-case {
+      width: 90px;
+      background: #111;
+      border-left: 2px solid #222;
+      box-shadow: inset 5px 0 15px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    @media (max-width: 600px) {
+      .pc-case { width: 70px; }
+    }
+    .power-btn-wrapper {
+      text-align: center;
+    }
+    .power-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #0a0a0a;
+      border: 2px solid #333;
+      box-shadow: inset 0 0 10px #000, 0 4px 5px rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #444;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+    .power-btn:hover {
+      border-color: #555;
+      color: #ff2a2a;
+      text-shadow: 0 0 8px #ff2a2a;
+      box-shadow: inset 0 0 10px #000, 0 0 15px rgba(255, 42, 42, 0.4);
+    }
+    .power-btn:active {
+      transform: translateY(2px);
+      box-shadow: inset 0 0 15px #000;
+    }
+    .btn-label {
+      margin-top: 10px;
+      font-size: 0.6rem;
+      color: #555;
+      letter-spacing: 2px;
+    }
+
+    /* СОСТОЯНИЕ 2: ЗАГРУЗКА BIOS / DOS */
+    #bootScreen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #000;
+      z-index: 50;
+      padding: 1.5rem;
+      display: none;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #ccc;
+    }
+    .boot-line { margin-bottom: 0.3rem; }
+
+    /* СОСТОЯНИЕ 3: РАБОЧИЙ ТЕРМИНАЛ */
+    #terminalScreen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      padding: 1.5rem;
+      background: #050608;
+      color: #00ff66;
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+    }
     .terminal-container {
       max-width: 850px;
       width: 100%;
@@ -40,7 +123,6 @@
       display: flex;
       flex-direction: column;
     }
-
     .term-header {
       border-bottom: 1px solid #005522;
       padding-bottom: 1rem;
@@ -50,7 +132,6 @@
       color: #008833;
       font-size: 0.8rem;
     }
-
     .output {
       flex: 1;
       overflow-y: auto;
@@ -58,7 +139,6 @@
       font-size: 0.95rem;
       word-break: break-word;
     }
-
     .line { margin-bottom: 0.5rem; }
     .dim { color: #007733; }
     .alert { color: #ff2a2a; }
@@ -73,13 +153,11 @@
       border-top: 1px solid #003311;
       padding-top: 1rem;
     }
-
     .prompt {
       color: #00ff66;
       font-weight: bold;
       user-select: none;
     }
-
     #cmdInput {
       background: transparent;
       border: none;
@@ -89,53 +167,144 @@
       flex: 1;
       outline: none;
     }
-
     .back-link {
       margin-top: 1.5rem;
       text-align: right;
       font-size: 0.75rem;
     }
-    .back-link a {
-      color: #005522;
-      text-decoration: none;
-    }
-    .back-link a:hover {
-      color: #00ff66;
-    }
+    .back-link a { color: #005522; text-decoration: none; }
+    .back-link a:hover { color: #00ff66; }
+
   </style>
 </head>
 <body>
 
-  <div class="terminal-container">
-    <div class="term-header">
-      <span>DAMN INTERACTIVE // OS v0.21.4</span>
-      <span>NODE: SCHOOL_SECTOR_01</span>
+  <!-- 1. Экран выключенного ПК -->
+  <div id="powerScreen">
+    <div class="monitor-dark"></div>
+    <div class="pc-case">
+      <div class="power-btn-wrapper">
+        <div class="power-btn" id="powerBtn" title="Включить питание">⏻</div>
+        <div class="btn-label">POWER</div>
+      </div>
     </div>
+  </div>
 
-    <div class="output" id="termOutput">
-      <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
-      <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
-      <div class="line">----------------------------------------------------</div>
-      <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
-      <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
-      <div class="line">----------------------------------------------------</div>
-    </div>
+  <!-- 2. Экран загрузки BIOS / MS-DOS -->
+  <div id="bootScreen"></div>
 
-    <div class="input-row">
-      <span class="prompt">guest@damn-term:~$</span>
-      <input type="text" id="cmdInput" autofocus autocomplete="off" spellcheck="false" />
-    </div>
+  <!-- 3. Основной терминал -->
+  <div id="terminalScreen">
+    <div class="terminal-container">
+      <div class="term-header">
+        <span>DAMN INTERACTIVE // OS v0.21.4</span>
+        <span>NODE: SCHOOL_SECTOR_01</span>
+      </div>
 
-    <div class="back-link">
-      <a href="index.html">[ ВЕРНУТЬСЯ В ОБЩИЙ ДОСТУП ]</a>
+      <div class="output" id="termOutput">
+        <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
+        <div class="line dim">// ЗАЩИЩЕННЫЙ КАНАЛ СВЯЗИ АКТИВЕН.</div>
+        <div class="line">----------------------------------------------------</div>
+        <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
+        <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
+        <div class="line">----------------------------------------------------</div>
+      </div>
+
+      <div class="input-row">
+        <span class="prompt">guest@damn-term:~$</span>
+        <input type="text" id="cmdInput" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="back-link">
+        <a href="index.html">[ ВЕРНУТЬСЯ В ОБЩИЙ ДОСТУП ]</a>
+      </div>
     </div>
   </div>
 
   <script>
-    const output = document.getElementById('termOutput');
-    const input = document.getElementById('cmdInput');
+    /* ЛОГИКА ЗАГРУЗКИ (BOOT SEQUENCE) */
+    const powerBtn = document.getElementById('powerBtn');
+    const powerScreen = document.getElementById('powerScreen');
+    const bootScreen = document.getElementById('bootScreen');
+    const terminalScreen = document.getElementById('terminalScreen');
+    const cmdInput = document.getElementById('cmdInput');
 
-    // База команд и секретных паролей
+    // Текст для симуляции BIOS и DOS
+    const bootSequenceLines = [
+      "Award Modular BIOS v4.51PG, An Energy Star Ally",
+      "Copyright (C) 1984-2026, Award Software, Inc.",
+      "<br>",
+      "DAMN INTERACTIVE MOTHERBOARD REV 2.1",
+      "<br>",
+      "Main Processor : DAMN-CORE(tm) 666 MHz",
+      "Memory Testing : 1048576K OK",
+      "<br>",
+      "Detecting IDE Primary Master ... HHD-PROJECT21",
+      "Detecting IDE Primary Slave  ... None",
+      "Detecting IDE Secondary Master ... None",
+      "<br>",
+      "Press DEL to enter SETUP",
+      "...",
+      "CLEAR", // Специальный флаг для очистки экрана перед DOS
+      "Starting MS-DOS 8.0...",
+      "<br>",
+      "HIMEM is testing extended memory...done.",
+      "Loading CD-ROM device driver...",
+      "C:\\> CD \\DAMN_OS",
+      "C:\\DAMN_OS> boot.exe",
+      "INITIATING SECURE PROTOCOL...",
+      "Connecting to school_sector_01...",
+      "DONE."
+    ];
+
+    powerBtn.addEventListener('click', () => {
+      // Прячем корпус компа
+      powerScreen.style.display = 'none';
+      bootScreen.style.display = 'block';
+
+      // Запускаем печать строк
+      let delay = 300;
+      let i = 0;
+
+      function printBootLine() {
+        if (i < bootSequenceLines.length) {
+          let text = bootSequenceLines[i];
+          
+          if (text === "CLEAR") {
+            bootScreen.innerHTML = "";
+            delay = 800; // Пауза перед загрузкой DOS
+          } else {
+            bootScreen.innerHTML += `<div class="boot-line">${text}</div>`;
+            // Рандомим задержку для реалистичности (от 50 до 300мс)
+            delay = text.includes("...") ? 500 : Math.floor(Math.random() * 150) + 50;
+          }
+          
+          i++;
+          setTimeout(printBootLine, delay);
+        } else {
+          // Конец загрузки, запускаем терминал
+          setTimeout(() => {
+            bootScreen.style.display = 'none';
+            terminalScreen.style.display = 'flex';
+            document.body.style.overflowY = 'auto'; // Возвращаем скролл
+            
+            // Плавное появление
+            setTimeout(() => {
+              terminalScreen.style.opacity = '1';
+              cmdInput.focus();
+            }, 100);
+
+          }, 800);
+        }
+      }
+
+      printBootLine();
+    });
+
+
+    /* ЛОГИКА ТЕРМИНАЛА (ARG) */
+    const output = document.getElementById('termOutput');
+
     const commands = {
       help: `
 Доступные команды:
@@ -143,26 +312,26 @@
   <span class="gold">status</span>     - Текущий статус проектов студии
   <span class="gold">creators</span>   - Данные об основателях
   <span class="gold">clear</span>      - Очистить терминал
-  <span class="alert">[КОД]</span>      - Ввод найденного пароля или шифра из записок
+  <span class="alert">[КОД]</span>      - Ввод найденного пароля или шифра
 `,
       status: `
 [СТАТУС ПРОДАКШНА]
-• Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Камера: Redmi Note 10 Pro)
-• Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // Время: 4 часа)
-• Project 21: В ПРОИЗВОДСТВЕ // Уровень опасности: МАКСИМАЛЬНЫЙ
-• Локации: Школьный комплекс и прилегающая территория
+• Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Redmi Note 10 Pro)
+• Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // 4 часа)
+• Project 21: В ПРОИЗВОДСТВЕ // Хронометраж: 2-3 минуты // Ставка: СМЕРТЬ
+• Локации: Школьный сектор и прилегающая территория
 `,
       creators: `
 [ДОСТУП К ДОСЬЕ]
 • k1zo      - Инициатор, режиссура, каркас продакшна
 • mixp1ezz  - Полевой исполнитель, тактика, динамика
 `,
-      // Секретные коды для школьного квеста:
       "21": `
-<span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 <<<</span>
-"Ты думаешь, карты сдаются случайно? 
-В этой комнате нет правил, кроме одного: тот, кто набрал больше 21, больше никогда не покинет подвал. 
-Твой палец на гильотине. Ставь фишку."
+<span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 [PROJECT 21] <<<</span>
+"Никаких мелких ставок. Никаких пальцев. 
+По центру стола воет вращающийся диск циркулярной пилы. 
+У тебя ровно три минуты, чтобы переиграть противника, пока лезвие не сдвинется в твою сторону. 
+Берёшь ещё карту или пасуешь?"
 <span class="dim">// ПОДСКАЗКА ДЛЯ ПОИСКА: Ищи следующую метку возле кабинета на 2 этаже.</span>
 `,
       "school": `
@@ -183,28 +352,31 @@
       output.scrollTop = output.scrollHeight;
     }
 
-    input.addEventListener('keydown', function(e) {
+    cmdInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        const val = input.value.trim().toLowerCase();
+        const val = cmdInput.value.trim().toLowerCase();
         if (!val) return;
 
-        printLine(`<span class="prompt">guest@damn-term:~$</span> <span class="white">${input.value}</span>`);
+        printLine(`<span class="prompt">guest@damn-term:~$</span> <span class="white">${cmdInput.value}</span>`);
 
         if (val === 'clear') {
           output.innerHTML = '';
         } else if (commands[val]) {
           printLine(commands[val]);
         } else {
-          printLine(`<span class="alert">ОШИБКА: Команда или ключ "${input.value}" не распознан. Доступ запрещен.</span>`);
+          printLine(`<span class="alert">ОШИБКА: Команда или ключ "${cmdInput.value}" не распознан. Доступ запрещен.</span>`);
         }
 
-        input.value = '';
+        cmdInput.value = '';
         output.scrollTop = output.scrollHeight;
       }
     });
 
-    // Держать фокус на вводе
-    document.addEventListener('click', () => input.focus());
+    document.addEventListener('click', () => {
+      if(terminalScreen.style.display === 'flex') {
+        cmdInput.focus();
+      }
+    });
   </script>
 </body>
 </html>
