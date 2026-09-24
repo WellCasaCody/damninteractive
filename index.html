@@ -89,10 +89,24 @@
     .about-content h2 { font-size: 1.8rem; margin-bottom: 1.2rem; }
     .about-content p { color: #b3b8c2; font-size: 1rem; margin-bottom: 1rem; line-height: 1.7; }
     .highlight { color: #fff; font-weight: 600; }
+    
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+
     .note-badge {
-      display: inline-block; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem; color: var(--accent); background: rgba(255, 42, 42, 0.1);
       padding: 0.35rem 0.65rem; border-radius: 4px; border: 1px solid rgba(255, 42, 42, 0.3);
+    }
+
+    .loc-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: #aaa; background: #16181d;
+      padding: 0.35rem 0.65rem; border-radius: 4px; border: 1px solid #2d3038;
     }
 
     .cta-box { text-align: center; padding: 1.5rem 0 3rem; }
@@ -173,11 +187,14 @@
         <p>
           Мы начинали буквально с разбитого в хлам <span class="highlight">Redmi Note 10 Pro</span>, а дошли до того, что сняли вдвоём фильм про вред веществ на очень плотном уровне.
         </p>
-        <div class="note-badge">
-          ⚡ Снято за 1 день. А если точнее — ровно за 4 часа.
+        
+        <div class="badge-group">
+          <div class="note-badge">⚡ Снято за 1 день (ровно за 4 часа)</div>
+          <div class="loc-badge">📍 Локации: Школа и улица перед школой</div>
         </div>
+
         <p style="margin-top: 1rem;">
-          Никаких продюсеров, инвесторов и духоты. Камера, звук и сценарий, который пишется кровью и потом.
+          Никаких павильонов, киностудий и спонсоров. Только школьные стены, улица перед входом, живой свет и максимальное погружение.
         </p>
       </div>
     </section>
@@ -223,7 +240,7 @@
       });
     }
 
-    // Автоматический запуск видео
+    // Автоматический пуск видео
     window.addEventListener('DOMContentLoaded', () => {
       const vid = document.getElementById('introVideo');
       if (vid) {
