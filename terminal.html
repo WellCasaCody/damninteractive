@@ -1,673 +1,504 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DAMN-OS // CRT TERMINAL</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DAMN INTERACTIVE // TERMINAL</title>
+  
+  <!-- Firebase SDK (Compat для чистого браузерного JS) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    html, body {
-      height: 100%;
-      height: 100dvh;
-      background-color: #030403;
-      color: #33ff66;
-      font-family: 'JetBrains Mono', monospace;
-      position: relative;
+    :root {
+      --term-color: #00ff66;
+      --term-glow: rgba(0, 255, 102, 0.4);
+      --term-bg: #050805;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #020202;
+      color: var(--term-color);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 15px;
+      line-height: 1.4;
+      height: 100vh;
       overflow: hidden;
-      user-select: none;
-    }
-
-    /* АНАЛОГОВЫЙ ЭЛТ-ЭФФЕКТ (Сканлайны + мерцание) */
-    .crt-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: 
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%),
-        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-      background-size: 100% 3px, 6px 100%;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    /* Выпуклость экрана и тень кинескопа */
-    .crt-vignette {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(0, 20, 5, 0.8);
-      pointer-events: none;
-      z-index: 998;
-    }
-
-    /* Свечение зелёного люминофора */
-    .glow {
-      text-shadow: 0 0 6px rgba(51, 255, 102, 0.65), 0 0 12px rgba(51, 255, 102, 0.3);
-    }
-
-    /* 1. ЭКРАН ВЫКЛЮЧЕННОГО ПК */
-    #powerScreen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #010201;
-      z-index: 100;
       display: flex;
-    }
-    .monitor-dark {
-      flex: 1;
-      background: radial-gradient(circle at center, #050a06 0%, #000 80%);
-      display: flex;
-      align-items: center;
       justify-content: center;
-      color: #1a3320;
-      font-size: 0.8rem;
-      text-align: center;
-      padding: 1rem;
-    }
-    .pc-case {
-      width: 90px;
-      background: #0f1011;
-      border-left: 2px solid #1c1e21;
-      box-shadow: inset 6px 0 18px rgba(0,0,0,0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    @media (max-width: 600px) {
-      .pc-case { width: 75px; }
-      .monitor-dark { display: none; }
-    }
-
-    .power-btn {
-      width: 46px; height: 46px;
-      border-radius: 50%;
-      background: #08090a;
-      border: 2px solid #2a2c30;
-      box-shadow: inset 0 0 10px #000, 0 4px 6px rgba(0,0,0,0.6);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: #444;
-      font-size: 1.3rem;
-      transition: all 0.2s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .power-btn:hover, .power-btn:active {
-      border-color: #666;
-      color: #ff2a2a;
-      text-shadow: 0 0 8px #ff2a2a;
-      box-shadow: inset 0 0 10px #000, 0 0 16px rgba(255, 42, 42, 0.5);
-    }
-    .btn-label { margin-top: 10px; font-size: 0.6rem; color: #555; letter-spacing: 2px; }
-
-    /* 2. POST ЗАГРУЗКА */
-    #bootScreen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #000;
-      z-index: 50;
-      padding: 1.2rem;
-      display: none;
-      font-size: 0.85rem;
-      line-height: 1.45;
-      color: #aaa;
-      overflow-y: auto;
-    }
-    .boot-line { margin-bottom: 0.25rem; }
-
-    .asus-logo-box {
-      position: absolute;
-      top: 1.2rem; right: 1.2rem;
-      border: 2px solid #2a3a55;
-      background: #040810;
-      padding: 8px 12px;
-      text-align: center;
-    }
-    .asus-logo-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: #fff;
-      font-family: sans-serif;
-      border-bottom: 1px solid #2a3a55;
-      padding-bottom: 2px;
-      margin-bottom: 2px;
-    }
-    .asus-logo-sub { font-size: 0.45rem; color: #7d94b8; }
-
-    #qtePrompt {
-      display: none;
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(40, 5, 5, 0.85);
-      border: 1px solid #ff3333;
-      color: #ff6666;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-      animation: blink 0.4s infinite alternate;
-      border-radius: 4px;
-      text-align: center;
-      width: 90%;
-      max-width: 380px;
-      z-index: 80;
-    }
-    @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
-
-    /* 3. BIOS SETUP */
-    #biosScreen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #000099;
-      color: #ffffff;
-      z-index: 60;
-      padding: 1rem;
-      display: none;
-      flex-direction: column;
-      font-size: 0.82rem;
-      overflow-y: auto;
-    }
-    .bios-header {
-      background: #aaaaaa;
-      color: #000099;
-      text-align: center;
-      font-weight: bold;
-      padding: 3px;
-      margin-bottom: 0.8rem;
-    }
-    .bios-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      border: 2px solid #aaaaaa;
-      padding: 0.8rem;
-      flex: 1;
-    }
-    .bios-section h3 {
-      color: #ffff55;
-      font-size: 0.9rem;
-      border-bottom: 1px dashed #aaaaaa;
-      padding-bottom: 4px;
-      margin-bottom: 0.6rem;
-    }
-    .bios-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.35rem;
-    }
-    .bios-val { color: #ffff55; }
-    .bios-footer {
-      background: #aaaaaa;
-      color: #000099;
-      padding: 6px;
-      margin-top: 0.8rem;
-      font-size: 0.78rem;
-      display: flex;
-      justify-content: space-between;
       align-items: center;
     }
-    .btn-exit-bios {
-      background: #000099;
-      color: #fff;
-      border: 1px solid #fff;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-family: inherit;
-    }
 
-    /* 4. CRT ТЕРМИНАЛ DAMN-OS */
-    #terminalScreen {
-      display: none;
-      flex-direction: column;
+    /* ЭЛТ-монитор, стекло и развёртка */
+    .crt-monitor {
+      position: relative;
+      width: 100%;
       height: 100%;
-      height: 100dvh;
-      padding: 1.2rem;
-      background: radial-gradient(circle at center, #07150a 0%, #020603 100%);
-      opacity: 0;
-      transition: opacity 0.4s ease-in;
+      background: var(--term-bg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
     }
 
-    .term-header {
-      border-bottom: 1px solid #005522;
-      padding-bottom: 0.6rem;
-      margin-bottom: 1rem;
+    .crt-monitor::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      z-index: 20;
+      background-size: 100% 3px, 4px 100%;
+      pointer-events: none;
+    }
+
+    .crt-monitor::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: radial-gradient(circle, transparent 65%, rgba(0, 0, 0, 0.8) 100%);
+      z-index: 21;
+      pointer-events: none;
+    }
+
+    /* Верхняя статусная строка */
+    .terminal-header {
       display: flex;
       justify-content: space-between;
-      color: #1a8838;
-      font-size: 0.78rem;
+      border-bottom: 1px solid var(--term-color);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px var(--term-glow);
     }
 
-    .output {
+    /* Поле вывода логов */
+    .terminal-body {
       flex: 1;
       overflow-y: auto;
-      line-height: 1.6;
-      font-size: 0.92rem;
-      word-break: break-word;
-      padding-right: 6px;
-      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 10px;
+      z-index: 10;
+      text-shadow: 0 0 5px var(--term-glow);
     }
-    .line { margin-bottom: 0.45rem; }
-    .dim { color: #1a7732; }
-    .alert { color: #ff3333; text-shadow: 0 0 8px rgba(255, 51, 51, 0.6); }
-    .gold { color: #ffcc00; text-shadow: 0 0 8px rgba(255, 204, 0, 0.4); }
-    .white { color: #e6ffe6; text-shadow: 0 0 6px rgba(230, 255, 230, 0.5); }
 
-    .input-row {
+    .terminal-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: var(--term-color);
+    }
+
+    /* Строки */
+    .terminal-line {
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .highlight { color: #ffffff; font-weight: bold; }
+    .dim { opacity: 0.6; }
+    .alert { color: #ff3344 !important; font-weight: bold; text-shadow: 0 0 8px #ff3344 !important; }
+    .success { color: #ffff33; font-weight: bold; }
+
+    /* Поле ввода */
+    .input-line {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.8rem;
-      border-top: 1px solid #00441a;
-      padding-top: 0.8rem;
+      margin-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      padding-top: 10px;
+      z-index: 25;
     }
-    .prompt {
-      color: #33ff66;
+
+    .prompt-prefix {
+      color: var(--term-color);
       font-weight: bold;
-      font-size: 0.95rem;
+      margin-right: 10px;
       white-space: nowrap;
+      text-shadow: 0 0 5px var(--term-glow);
     }
-    #cmdInput {
+
+    #term-input {
+      flex: 1;
       background: transparent;
       border: none;
-      color: #e6ffe6;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      flex: 1;
       outline: none;
-      min-width: 0;
-      text-shadow: 0 0 6px rgba(51, 255, 102, 0.6);
-      caret-color: #33ff66;
+      color: var(--term-color);
+      font-family: inherit;
+      font-size: inherit;
+      text-shadow: 0 0 5px var(--term-glow);
+      caret-color: var(--term-color);
     }
 
-    .term-footer-links {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 0.6rem;
-      font-size: 0.72rem;
-      color: #1a5526;
+    /* Аварийный глитч при смерти в рулетке */
+    .terminal-crash {
+      filter: invert(1) contrast(300%) !important;
+      animation: fatal-glitch 0.08s infinite;
     }
-    .term-footer-links a { color: #1a7732; text-decoration: none; }
-    .term-footer-links a:hover { color: #33ff66; }
+
+    @keyframes fatal-glitch {
+      0% { transform: translate(3px, -2px); }
+      50% { transform: translate(-3px, 3px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @media (max-width: 768px) {
+      body { font-size: 13px; }
+      .crt-monitor { padding: 12px; }
+      .prompt-prefix { font-size: 12px; }
+    }
   </style>
 </head>
-<body class="glow">
+<body>
 
-  <!-- Фильтры стеклянного кинескопа ЭЛТ -->
-  <div class="crt-overlay"></div>
-  <div class="crt-vignette"></div>
+  <div class="crt-monitor" id="monitor">
+    <div class="terminal-header">
+      <span>DAMN INTERACTIVE // OS 4.06-RTX</span>
+      <span id="auth-status">[USER: GUEST]</span>
+    </div>
 
-  <!-- 1. Экран выключенного ПК -->
-  <div id="powerScreen">
-    <div class="monitor-dark">
-      <div>
-        <div style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4;">⚡</div>
-        CRT TERMINAL OFFLINE<br>
-        <span style="font-size: 0.7rem; color: #122416;">[ НАЖМИТЕ КНОПКУ ПИТАНИЯ ]</span>
+    <div class="terminal-body" id="term-body">
+      <div id="term-output">
+        <p class="terminal-line dim">BIOS POST CHECK ................... [OK]</p>
+        <p class="terminal-line dim">PRIMARY GPU DETECTED .............. NVIDIA RTX 4060 (8GB)</p>
+        <p class="terminal-line dim">NET_CLUSTER: CLOUDFLARE_PAGES ..... MOUNTED</p>
+        <p class="terminal-line">=== ДОБРО ПОЖАЛОВАТЬ В ТЕРМИНАЛ СТУДИИ DAMN INTERACTIVE ===</p>
+        <p class="terminal-line">Введите <span class="highlight">help</span> для списка доступных директив.</p>
       </div>
     </div>
-    <div class="pc-case">
-      <div class="power-btn-wrapper">
-        <div class="power-btn" id="powerBtn" title="Включить питание">⏻</div>
-        <div class="btn-label">POWER</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- 2. Экран POST-загрузки -->
-  <div id="bootScreen">
-    <div class="asus-logo-box" id="asusLogo">
-      <div class="asus-logo-title">ASUS</div>
-      <div class="asus-logo-sub">P4P800 DELUXE</div>
-    </div>
-    <div id="bootText"></div>
-    <div id="qtePrompt" onclick="triggerBios()">[QTE] ЖМИ [DEL] ИЛИ ТАПНИ ДЛЯ BIOS!</div>
-  </div>
-
-  <!-- 3. Синий BIOS Setup -->
-  <div id="biosScreen">
-    <div class="bios-header">ROM PCI/ISA BIOS (P4P800-DAMN) - CMOS SETUP</div>
-    <div class="bios-grid">
-      <div class="bios-section">
-        <h3>HARDWARE STATUS</h3>
-        <div class="bios-row"><span>CPU:</span><span class="bios-val">Intel P4 3.00GHz</span></div>
-        <div class="bios-row"><span>RAM:</span><span class="bios-val">1024 MB DDR-400</span></div>
-        <div class="bios-row"><span>Primary IDE:</span><span class="bios-val">50.0 GB Seagate</span></div>
-        <div class="bios-row"><span>CPU Temp:</span><span class="bios-val" style="color: #ff5555;">89°C (КПТ-8 высохла)</span></div>
-        <div class="bios-row"><span>Fan Speed:</span><span class="bios-val">4920 RPM (Турбина)</span></div>
-        
-        <h3 style="margin-top: 0.8rem;">DAMN TUNING</h3>
-        <div class="bios-row"><span>Overclock:</span><span class="bios-val">[EXTREME]</span></div>
-        <div class="bios-row"><span>Overheat Protec:</span><span class="bios-val">[DISABLED]</span></div>
-        <div class="bios-row"><span>Boot Priority:</span><span class="bios-val">[MS-DOS -> 21]</span></div>
-      </div>
-    </div>
-    <div class="bios-footer">
-      <span>Нажмите кнопку:</span>
-      <button class="btn-exit-bios" onclick="exitBiosToDos()">[F10] Сохранить и выйти в DOS</button>
-    </div>
-  </div>
-
-  <!-- 4. Основной ЭЛТ-терминал DAMN-OS -->
-  <div id="terminalScreen">
-    <div class="term-header">
-      <span>DAMN INTERACTIVE // OS v0.21.4</span>
-      <span>NODE: SCHOOL_SECTOR_01</span>
-    </div>
-
-    <div class="output" id="termOutput">
-      <div class="line dim">// СИСТЕМА УСПЕШНО ИНИЦИАЛИЗИРОВАНА.</div>
-      <div class="line dim">// КАНАЛ СВЯЗИ АКТИВЕН. КИНЕСКОП ПРОГРЕТ.</div>
-      <div class="line">----------------------------------------------------</div>
-      <div class="line white">ДОБРО ПОЖАЛОВАТЬ В ЗАСЕКРЕЧЕННЫЙ АРХИВ [PROJECT 21].</div>
-      <div class="line">Для списка базовых команд введите: <span class="gold">help</span></div>
-      <div class="line">Для выхода на сайт введите: <span class="gold">exit</span></div>
-      <div class="line">----------------------------------------------------</div>
-    </div>
-
-    <div class="input-row">
-      <span class="prompt">root@damn-crt:~$</span>
-      <input type="text" id="cmdInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-    </div>
-
-    <div class="term-footer-links">
-      <span>CRT LUMINOPHOR: 520nm</span>
-      <a href="index.html" onclick="exitToSite(); return false;">[ EXIT_TO_MAIN ]</a>
+    <div class="input-line">
+      <span class="prompt-prefix" id="prompt-label">guest@damn-node:~$</span>
+      <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
     </div>
   </div>
 
   <script>
-    const powerBtn = document.getElementById('powerBtn');
-    const powerScreen = document.getElementById('powerScreen');
-    const bootScreen = document.getElementById('bootScreen');
-    const bootText = document.getElementById('bootText');
-    const asusLogo = document.getElementById('asusLogo');
-    const qtePrompt = document.getElementById('qtePrompt');
-    const biosScreen = document.getElementById('biosScreen');
-    const terminalScreen = document.getElementById('terminalScreen');
-    const cmdInput = document.getElementById('cmdInput');
-    const output = document.getElementById('termOutput');
-
-    let inBios = false;
-    let biosAllowed = false;
-    let bootInterval = null;
-
-    function exitToSite() {
-      window.location.href = "index.html";
-    }
-
-    // Системный писк спикера
-    function playBeep() {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        if (ctx.state === 'suspended') ctx.resume();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 0.16);
-      } catch (e) {}
-    }
-
-    const postLines = [
-      "ASUS P4P800 ACPI BIOS Revision 1019",
-      "Copyright (C) 1984-2004, American Megatrends, Inc.",
-      "<br>",
-      "Main Processor : Intel(R) Pentium(R) 4 CPU 3.00GHz",
-      "Memory Testing : 1048576K OK (1024MB DDR-400)",
-      "<br>",
-      "Primary IDE Master   : ST350014A Seagate Barracuda 50.0 GB",
-      "Secondary IDE Master : ASUS CD-S520/A5 CD-ROM",
-      "<br>",
-      "Press DEL to enter SETUP, ESC to skip memory test",
-      "Booting from Primary Master...",
-      "...",
-      "CLEAR",
-      "Starting MS-DOS 8.0...",
-      "<br>",
-      "HIMEM is testing extended memory...done.",
-      "C:\\> PATH=C:\\DOS;C:\\DAMN_OS",
-      "C:\\> CD \\DAMN_OS",
-      "C:\\DAMN_OS> execute damn_term.exe -auth guest",
-      "ESTABLISHING PROTOCOL [SCHOOL_LOCAL_NET]...",
-      "CONNECTED (PORT 21).",
-      "DONE."
-    ];
-
-    powerBtn.addEventListener('click', () => {
-      playBeep();
-      powerScreen.style.display = 'none';
-      bootScreen.style.display = 'block';
-
-      let i = 0;
-      function stepBoot() {
-        if (inBios) return;
-
-        if (i < postLines.length) {
-          const line = postLines[i];
-
-          if (line.includes("Press DEL to enter SETUP")) {
-            biosAllowed = true;
-            qtePrompt.style.display = 'block';
-          }
-
-          if (line === "CLEAR") {
-            biosAllowed = false;
-            qtePrompt.style.display = 'none';
-            bootText.innerHTML = "";
-            asusLogo.style.display = "none";
-            i++;
-            bootInterval = setTimeout(stepBoot, 600);
-            return;
-          }
-
-          bootText.innerHTML += `<div class="boot-line">${line}</div>`;
-          bootScreen.scrollTop = bootScreen.scrollHeight;
-          const delay = line.includes("...") ? 400 : Math.floor(Math.random() * 80) + 30;
-          i++;
-          bootInterval = setTimeout(stepBoot, delay);
-        } else {
-          setTimeout(() => {
-            bootScreen.style.display = 'none';
-            terminalScreen.style.display = 'flex';
-            setTimeout(() => {
-              terminalScreen.style.opacity = '1';
-              cmdInput.focus();
-            }, 100);
-          }, 400);
-        }
-      }
-
-      stepBoot();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if ((e.key === 'Delete' || e.key === 'Del') && biosAllowed && !inBios) {
-        triggerBios();
-      }
-      if (e.key === 'F10' && inBios) {
-        exitBiosToDos();
-      }
-    });
-
-    function triggerBios() {
-      inBios = true;
-      biosAllowed = false;
-      clearTimeout(bootInterval);
-      bootScreen.style.display = 'none';
-      biosScreen.style.display = 'flex';
-    }
-
-    function exitBiosToDos() {
-      inBios = false;
-      biosScreen.style.display = 'none';
-      bootScreen.style.display = 'block';
-      asusLogo.style.display = 'none';
-      qtePrompt.style.display = 'none';
-      bootText.innerHTML = `
-        <div class="boot-line">Saving configuration to CMOS... OK</div>
-        <div class="boot-line">Starting MS-DOS 8.0...</div>
-        <div class="boot-line">C:\\DAMN_OS> execute damn_term.exe -auth guest</div>
-        <div class="boot-line">CONNECTED (PORT 21).</div>
-        <div class="boot-line">DONE.</div>
-      `;
-      setTimeout(() => {
-        bootScreen.style.display = 'none';
-        terminalScreen.style.display = 'flex';
-        setTimeout(() => {
-          terminalScreen.style.opacity = '1';
-          cmdInput.focus();
-        }, 100);
-      }, 600);
-    }
-
-    /* КОМАНДЫ ТЕРМИНАЛА */
-    const commands = {
-      help: `
-<span class="gold">СИСТЕМНЫЕ КОМАНДЫ:</span>
-  <span class="gold">help</span>       - Справка по терминалу
-  <span class="gold">status</span>     - Текущее состояние проектов
-  <span class="gold">creators</span>   - Личные дела основателей
-  <span class="gold">gear</span>       - Текущий сетап оборудования
-  <span class="gold">films</span>      - Список выпущенных фильмов
-  <span class="gold">vk</span>         - Ссылка на официальное сообщество
-  <span class="gold">whoami</span>     - Кто авторизован в системе
-  <span class="gold">date</span>       - Системное время узла
-  <span class="gold">matrix</span>     - Запуск потока данных
-  <span class="gold">reboot</span>     - Перезагрузка системы
-  <span class="gold">clear</span>      - Очистить экран
-  <span class="gold">exit</span>       - Выход на сайт
-  <span class="alert">[КОД]</span>      - Ввод найденного шифра (21, cleaner, school...)
-`,
-      status: `
-[СТАТУС ПРОДАКШНА]
-• Уборщик 1: АРХИВ // ЗАВЕРШЕНО (Redmi Note 10 Pro)
-• Уборщик 2: АРХИВ // ЗАВЕРШЕНО (iPhone 17 // 4 часа)
-• Project 21: В ПРОИЗВОДСТВЕ // Хронометраж: 2-3 мин // Ставка: СМЕРТЬ
-• Локации: Школьный комплекс и прилегающая территория
-`,
-      creators: `
-[ДОСТУП К ДОСЬЕ]
-• k1zo      - Инициатор, режиссура, каркас продакшна, iPhone 17
-• mixp1ezz  - Полевой исполнитель, тактика, динамика в кадре
-`,
-      gear: `
-[СЕКТОР СНАБЖЕНИЯ]
-• iPhone 17 White (Основной аппарат)
-• DJI Osmo Mobile 8P (Взят в августе 2026 // Ждёт Project 21)
-• Redmi Note 10 Pro (В Зале Почёта)
-`,
-      films: `
-[КАТАЛОГ СТУДИИ]
-1. «Уборщик» (2026) — Слэшер / Мистика
-2. «Уборщик 2: Страшно вырубай» (2026) — Психологический триллер
-3. «Project 21» (2026) — Саспенс / Дуэль с циркуляркой
-`,
-      vk: `
-Паблик студии: <a href="https://vk.ru/damninteractive" target="_blank" style="color: #33ff66; text-decoration: underline;">vk.ru/damninteractive</a>
-`,
-      whoami: `
-Пользователь: guest_node_user
-Уровень допуска: RESTRICTED // ARG_PARTICIPANT
-Шлюз: SCHOOL_WIFI_INTERNAL
-`,
-      date: `
-Системная дата узла: ${new Date().toLocaleString('ru-RU')}
-`,
-      "21": `
-<span class="alert">>>> ДОСТУП РАЗРЕШЕН: ФРАГМЕНТ СЦЕНАРИЯ #01 [PROJECT 21] <<<</span>
-"Никаких мелких ставок. Никаких пальцев. 
-По центру стола воет вращающийся диск циркулярной пилы. 
-У тебя ровно три минуты, чтобы переиграть противника, пока лезвие не сдвинется в твою сторону. 
-Берёшь ещё карту или пасуешь?"
-<span class="dim">// ПОДСКАЗКА: Ищи следующую метку возле кабинета на 2 этаже.</span>
-`,
-      "school": `
-<span class="gold">>>> СЕКТОР "ШКОЛА" <<<</span>
-Все события начались в этих коридорах. Призрак забитого уборщика всё ещё помнит каждого. Не оставайся после уроков один.
-`,
-      "cleaner": `
-<span class="alert">>>> АРХИВ УБОРЩИКА <<<</span>
-"Сорви с него маску. Но помни: монстр в отражении уничтожит тебя твоими же руками."
-`
+    /* ========================================================
+       1. КОНФИГУРАЦИЯ FIREBASE REALTIME DATABASE
+       Вставь сюда свои ключи из консоли Firebase Console
+       ======================================================== */
+    const firebaseConfig = {
+      apiKey: "ТВОЙ_API_KEY",
+      authDomain: "damninteractive.firebaseapp.com",
+      databaseURL: "https://damninteractive-default-rtdb.firebaseio.com",
+      projectId: "damninteractive",
+      storageBucket: "damninteractive.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:000000000000"
     };
 
-    function printLine(html) {
-      const div = document.createElement('div');
-      div.className = 'line';
-      div.innerHTML = html;
-      output.appendChild(div);
-      output.scrollTop = output.scrollHeight;
+    let rtdb = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      rtdb = firebase.database();
+    } catch (e) {
+      console.warn("Firebase не инициализирован. Заполните конфиг.");
     }
 
-    function runMatrix() {
-      printLine('<span class="dim">// ИНИЦИАЛИЗАЦИЯ ПОТОКА ДАННЫХ...</span>');
-      let count = 0;
-      const matrixInt = setInterval(() => {
-        let chars = "01DAMNINTERACTIVE21XYZ_#!?";
-        let str = "";
-        for (let j = 0; j < 32; j++) {
-          str += chars.charAt(Math.floor(Math.random() * chars.length)) + " ";
-        }
-        printLine(`<span style="color: #1a8838; font-size: 0.75rem;">${str}</span>`);
-        count++;
-        if (count > 10) {
-          clearInterval(matrixInt);
-          printLine('<span class="white">// ПОТОК СИНХРОНИЗИРОВАН.</span>');
-        }
-      }, 70);
+    /* ========================================================
+       2. ЗВУКОВОЙ ДВИЖОК (WEB AUDIO API)
+       ======================================================== */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playKeyClick() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800 + Math.random() * 400, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
     }
 
-    function handleCommand() {
-      const val = cmdInput.value.trim().toLowerCase();
-      if (!val) return;
+    function playBeep(freq = 440, duration = 0.15) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
 
-      printLine(`<span class="prompt">root@damn-crt:~$</span> <span class="white">${cmdInput.value}</span>`);
+    /* ========================================================
+       3. ЭЛЕМЕНТЫ И СОСТОЯНИЕ
+       ======================================================== */
+    const output = document.getElementById('term-output');
+    const input = document.getElementById('term-input');
+    const termBody = document.getElementById('term-body');
+    const promptLabel = document.getElementById('prompt-label');
+    const authStatus = document.getElementById('auth-status');
+    const monitor = document.getElementById('monitor');
 
-      if (val === 'clear') {
-        output.innerHTML = '';
-      } else if (val === 'exit' || val === 'quit') {
-        printLine('<span class="dim">// ОТКЛЮЧЕНИЕ ТЕРМИНАЛА...</span>');
-        setTimeout(exitToSite, 500);
-      } else if (val === 'reboot' || val === 'restart') {
-        location.reload();
-      } else if (val === 'matrix') {
-        runMatrix();
-      } else if (commands[val]) {
-        printLine(commands[val]);
+    let isAdmin = sessionStorage.getItem('damn_admin') === 'true';
+
+    function updateSessionUI() {
+      if (isAdmin) {
+        promptLabel.innerText = "root@damn-interactive:~#";
+        authStatus.innerText = "[ACCESS LEVEL: ROOT / ADMIN]";
+        authStatus.style.color = "#ff3344";
       } else {
-        printLine(`<span class="alert">ОШИБКА: Команда или ключ "${cmdInput.value}" не распознан. Введите help.</span>`);
+        promptLabel.innerText = "guest@damn-node:~$";
+        authStatus.innerText = "[USER: GUEST]";
+        authStatus.style.color = "var(--term-color)";
       }
+    }
+    updateSessionUI();
 
-      cmdInput.value = '';
-      output.scrollTop = output.scrollHeight;
+    function print(text, className = '') {
+      const p = document.createElement('p');
+      p.className = `terminal-line ${className}`;
+      p.innerHTML = text;
+      output.appendChild(p);
+      termBody.scrollTop = termBody.scrollHeight;
     }
 
-    cmdInput.addEventListener('keydown', function(e) {
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    /* ========================================================
+       4. СЛУШАТЕЛЬ BROADCAST (ЖИВОЙ ЭФИР ДЛЯ ВСЕХ)
+       ======================================================== */
+    if (rtdb) {
+      rtdb.ref('broadcast').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.text) {
+          playBeep(880, 0.3);
+          print(`<span class="alert">>>> [OVERRIDE BROADCAST BY ${escapeHtml(data.sender || 'UNKNOWN')}]:</span> <span class="highlight">${escapeHtml(data.text)}</span>`);
+        }
+      });
+    }
+
+    /* ========================================================
+       5. КОМАНДНЫЙ ИНТЕРПРЕТАТОР
+       ======================================================== */
+    input.addEventListener('keydown', (e) => {
+      playKeyClick();
       if (e.key === 'Enter') {
-        handleCommand();
+        const val = input.value.trim();
+        if (val) {
+          handleCommand(val);
+        }
+        input.value = '';
       }
     });
 
-    document.addEventListener('click', (e) => {
-      if (terminalScreen.style.display === 'flex' && e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
-        cmdInput.focus();
+    // Автофокус при клике в любой точке экрана
+    document.addEventListener('click', () => input.focus());
+
+    function handleCommand(raw) {
+      const parts = raw.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      print(`${promptLabel.innerText} ${escapeHtml(raw)}`);
+
+      switch (cmd) {
+        case 'help':
+          print("=== СПИСОК КОМАНД ЯДРА ===");
+          print("<span class='highlight'>SYSTEM:</span> help, clear, whoami, date, ping [host], reboot");
+          print("<span class='highlight'>HARDWARE:</span> specs, storage, status");
+          print("<span class='highlight'>DISPLAY:</span> theme [green | amber | cyan | red]");
+          print("<span class='highlight'>FUN:</span> roulette, matrix, scan");
+          print("<span class='highlight'>SECURITY:</span> login &lt;user&gt; &lt;pass&gt;, logout, sudo");
+          if (isAdmin) {
+            print("<span class='alert'>ROOT ACTIVE:</span> broadcast &lt;сообщение&gt; (Трансляция всем юзерам)");
+          }
+          break;
+
+        case 'clear':
+        case 'cls':
+          output.innerHTML = '';
+          break;
+
+        case 'whoami':
+          if (isAdmin) {
+            print("UID=0(root) GID=0(root) GROUPS=admin,wheel,directors");
+            print("Полный контроль над трансляцией Damn Interactive.");
+          } else {
+            print("UID=1000(guest) GID=1000(damn_viewer)");
+            print("Статус: Гостевой терминал. Введите <span class='highlight'>login</span> для входа.");
+          }
+          break;
+
+        case 'date':
+          print(new Date().toString());
+          break;
+
+        case 'ping':
+          const host = args[0] || 'damninteractive.ru';
+          print(`PING ${host} (104.21.72.1): 56 bytes of data.`);
+          setTimeout(() => print(`64 bytes from ${host}: icmp_seq=1 ttl=58 time=1.42 ms`), 200);
+          setTimeout(() => print(`64 bytes from ${host}: icmp_seq=2 ttl=58 time=0.89 ms`), 450);
+          setTimeout(() => print(`--- ${host} ping statistics: 0% packet loss ---`), 700);
+          break;
+
+        case 'specs':
+          print("--- HARDWARE RIG SPECS ---");
+          print("GPU: NVIDIA GeForce RTX 4060 Laptop (8GB GDDR6)");
+          print("AUDIO PIPELINE: DJI Dual-Channel Wireless Rig (2TX + 1RX)");
+          print("CAMERA SETUP: Mobile 4K Rig + 3-Axis Stabilizer");
+          print("HOSTING: Cloudflare Pages + Edge Realtime DB");
+          break;
+
+        case 'storage':
+          print("Filesystem      Size  Used Avail Use% Mounted on");
+          print("/dev/nvme0n1p2  1.0T  842G  158G  85% /footage_raw");
+          print("/dev/sda1       512G  320G  192G  63% /projects_vault");
+          break;
+
+        case 'status':
+          print(`FIREBASE RTDB: ${rtdb ? 'ONLINE' : 'OFFLINE'}`);
+          print("CRT SCANNER: SYNCHRONIZED (60Hz)");
+          print("PRODUCTION STAGE: PRE-PROD // PROJECT 21");
+          break;
+
+        /* СМЕНА ЦВЕТА ФОСФОРА */
+        case 'theme':
+          const colorMode = args[0];
+          if (colorMode === 'amber') {
+            document.documentElement.style.setProperty('--term-color', '#ffb000');
+            document.documentElement.style.setProperty('--term-glow', 'rgba(255, 176, 0, 0.4)');
+            print("Цветовая схема изменена на: AMBER CRT (Янтарь)");
+          } else if (colorMode === 'cyan') {
+            document.documentElement.style.setProperty('--term-color', '#00e5ff');
+            document.documentElement.style.setProperty('--term-glow', 'rgba(0, 229, 255, 0.4)');
+            print("Цветовая схема изменена на: CYBER CYAN (Неон)");
+          } else if (colorMode === 'red') {
+            document.documentElement.style.setProperty('--term-color', '#ff3344');
+            document.documentElement.style.setProperty('--term-glow', 'rgba(255, 51, 68, 0.4)');
+            print("Цветовая схема изменена на: EMERGENCY RED (Тревога)");
+          } else if (colorMode === 'green') {
+            document.documentElement.style.setProperty('--term-color', '#00ff66');
+            document.documentElement.style.setProperty('--term-glow', 'rgba(0, 255, 102, 0.4)');
+            print("Цветовая схема изменена на: PHOSPHOR GREEN (Классика)");
+          } else {
+            print("Использование: theme [green | amber | cyan | red]");
+          }
+          break;
+
+        /* АВТОРИЗАЦИЯ */
+        case 'login':
+          const user = args[0];
+          const pass = args[1];
+          if (user === 'admin' && pass === 'damn') {
+            isAdmin = true;
+            sessionStorage.setItem('damn_admin', 'true');
+            updateSessionUI();
+            playBeep(1200, 0.2);
+            print("<span class='success'>ДОСТУП РАЗРЕШЁН. Права root активированы.</span>");
+            print("Вам доступна команда глобального эфира: <span class='highlight'>broadcast &lt;текст&gt;</span>");
+          } else {
+            playBeep(200, 0.3);
+            print("<span class='alert'>ОШИБКА: Неверный логин или пароль.</span>");
+            print("Подсказка: login [username] [password]");
+          }
+          break;
+
+        case 'logout':
+          isAdmin = false;
+          sessionStorage.removeItem('damn_admin');
+          updateSessionUI();
+          print("Вы вышли из системы root.");
+          break;
+
+        /* ГЛОБАЛЬНЫЙ ЭФИР FIREBASE */
+        case 'broadcast':
+          if (!isAdmin) {
+            print("<span class='alert'>ОТКАЗАНО В ДОСТУПЕ. Требуется авторизация через login.</span>");
+            return;
+          }
+          const message = args.join(' ');
+          if (!message) {
+            print("Использование: broadcast &lt;текст сообщения&gt;");
+            return;
+          }
+          if (!rtdb) {
+            print("<span class='alert'>Ошибка: Firebase RTDB не настроен.</span>");
+            return;
+          }
+          rtdb.ref('broadcast').set({
+            sender: 'k1zo [ADMIN]',
+            text: message,
+            timestamp: Date.now()
+          }).then(() => {
+            print("<span class='success'>[OVERRIDE SENT] Сигнал разослан во все подключенные сессии.</span>");
+          }).catch((err) => {
+            print(`<span class='alert'>Ошибка трансляции: ${err.message}</span>`);
+          });
+          break;
+
+        /* МИНИ-ИГРА РУЛЕТКА */
+        case 'roulette':
+          print("Вращаем барабан... Палец на спусковом крючке...");
+          setTimeout(() => {
+            const roll = Math.floor(Math.random() * 6);
+            if (roll === 0) {
+              playBeep(150, 0.5);
+              print("<span class='alert'>*БАБАХ* — ПРЯМО В ВИСОК! Критический сбой терминала.</span>");
+              monitor.classList.add('terminal-crash');
+              setTimeout(() => location.reload(), 1400);
+            } else {
+              playBeep(600, 0.05);
+              print("<span class='success'>*ЩЁЛК* — Патронник пуст. Ты выжил. Дыши.</span>");
+            }
+          }, 800);
+          break;
+
+        case 'scan':
+          print("Сканирование портов Damn Interactive Net...");
+          let step = 0;
+          const intv = setInterval(() => {
+            step++;
+            print(`[PORT ${3000 + step * 42}] OPEN // Node: cluster_node_${step}`);
+            if (step >= 4) {
+              clearInterval(intv);
+              print("Периметр чист. Угроз не обнаружено.");
+            }
+          }, 200);
+          break;
+
+        case 'matrix':
+          document.documentElement.style.setProperty('--term-color', '#00ff66');
+          document.documentElement.style.setProperty('--term-glow', 'rgba(0, 255, 102, 0.7)');
+          print("Wake up, Neo... Follow the white rabbit.");
+          break;
+
+        case 'sudo':
+          print("user is not in the sudoers file. This incident will be reported.");
+          break;
+
+        case 'reboot':
+          print("Перезагрузка ядра...");
+          setTimeout(() => location.reload(), 500);
+          break;
+
+        default:
+          print(`Неизвестная команда: "${escapeHtml(raw)}". Введите <span class='highlight'>help</span>.`);
+          break;
       }
-    });
+    }
   </script>
 </body>
 </html>
