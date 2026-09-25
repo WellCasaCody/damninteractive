@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>DAMN INTERACTIVE // CRT TERMINAL</title>
 
-  <!-- Firebase Compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
   <style>
     :root {
       --phosphor: #00ff66;
@@ -33,7 +29,7 @@
       overflow: hidden;
     }
 
-    /* Корпус олдскульного монитора */
+    /* Корпус монитора */
     .monitor-frame {
       position: relative;
       width: 95vw;
@@ -48,7 +44,7 @@
       padding: 10px;
     }
 
-    /* Нижняя панель с кнопкой включения */
+    /* Нижняя панель */
     .bezel-bar {
       height: 42px;
       display: flex;
@@ -79,7 +75,6 @@
       height: 8px;
       border-radius: 50%;
       background: #330000;
-      box-shadow: none;
       transition: all 0.3s ease;
     }
 
@@ -116,7 +111,7 @@
       position: relative;
     }
 
-    /* ЭЛТ Стеклянный экран */
+    /* ЭЛТ Экран */
     .crt-screen {
       position: relative;
       flex: 1;
@@ -128,12 +123,10 @@
       box-shadow: inset 0 0 60px rgba(0,0,0,0.95);
     }
 
-    /* Выключенное состояние */
     .crt-screen.turned-off .screen-content {
       display: none !important;
     }
 
-    /* Сканлайны и ретро-развертка */
     .scanlines {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -145,7 +138,6 @@
       opacity: 0.9;
     }
 
-    /* Выпуклость кинескопа */
     .vignette {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -154,7 +146,6 @@
       z-index: 31;
     }
 
-    /* Мерцание трубки */
     .screen-content {
       position: relative;
       width: 100%;
@@ -175,7 +166,6 @@
       100% { opacity: 1; }
     }
 
-    /* Область вывода терминала */
     .terminal-body {
       flex: 1;
       overflow-y: auto;
@@ -201,7 +191,6 @@
       font-weight: bold;
     }
 
-    /* Строка ввода */
     .input-row {
       display: flex;
       align-items: center;
@@ -230,7 +219,6 @@
       user-select: text;
     }
 
-    /* Эффект выстрела рулетки */
     .fatal-flash {
       filter: invert(1) contrast(200%);
     }
@@ -255,7 +243,7 @@
       </div>
     </div>
 
-    <!-- Физическая панель монитора -->
+    <!-- Кнопка питания на рамке -->
     <div class="bezel-bar">
       <span class="brand-plate">DAMN CRT-VISION // MODEL-21</span>
       <div class="power-section">
@@ -267,29 +255,27 @@
     </div>
   </div>
 
-  <script>
-    /* ========================================================
-       FIREBASE ИНИЦИАЛИЗАЦИЯ
-       ======================================================== */
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+    import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
     const firebaseConfig = {
-      apiKey: "AIzaSyDummyKeyForDamnInteractive00",
-      authDomain: "damninteractive.firebaseapp.com",
-      databaseURL: "https://damninteractive-default-rtdb.firebaseio.com",
-      projectId: "damninteractive",
-      storageBucket: "damninteractive.appspot.com",
-      messagingSenderId: "1234567890",
-      appId: "1:1234567890:web:abcdef"
+      apiKey: "AIzaSyDN59BRis6QgBpewzPYfu7WSAhODKJ3WVA",
+      authDomain: "damn-terminal.firebaseapp.com",
+      databaseURL: "https://damn-terminal-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "damn-terminal",
+      storageBucket: "damn-terminal.firebasestorage.app",
+      messagingSenderId: "841655132645",
+      appId: "1:841655132645:web:eac7043a5875561b894f0c",
+      measurementId: "G-NNTF3GYQE8"
     };
 
-    let rtdb = null;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      rtdb = firebase.database();
-    } catch(e) {}
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
 
-    /* ========================================================
-       ЧИСТЫЙ ЗВУК: ТОЛЬКО СИСТЕМНЫЙ СИСТЕМНЫЙ BEEP (БЕЗ КЛИКОВ КЛАВЫ)
-       ======================================================== */
+    /* ЗВУКОВОЙ СИСТЕМНЫЙ BEEP (БЕЗ ЗВУКОВ КЛАВИШ) */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function systemBeep(freq = 820, duration = 0.18) {
@@ -297,7 +283,7 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'square'; // Характерный олдскульный писк BIOS
+        osc.type = 'square';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
@@ -308,11 +294,10 @@
       } catch (err) {}
     }
 
-    /* ========================================================
-       УПРАВЛЕНИЕ ПИТАНИЕМ И ASUS BIOS POST
-       ======================================================== */
+    /* ЭЛЕМЕНТЫ И СОСТОЯНИЕ */
     let isPoweredOn = false;
     let isAdmin = sessionStorage.getItem('damn_root') === 'true';
+    let broadcastAttached = false;
 
     const crt = document.getElementById('crt');
     const powerLed = document.getElementById('powerLed');
@@ -351,7 +336,6 @@
       output.innerHTML = '';
       inputBar.style.display = 'none';
 
-      // ASUS BIOS POST строки
       setTimeout(() => print("ASUSTeK COMPUTER INC. BIOS VERSION 2104"), 150);
       setTimeout(() => print("CPU: Intel(R) Core(TM) i7-13700H @ 3.40GHz"), 300);
       setTimeout(() => print("Memory Test: 16384KB OK"), 450);
@@ -360,18 +344,16 @@
         print("Detecting Secondary Master ... NVMe PCIE SSD 1TB");
       }, 650);
 
-      // Одиночный писк спикера материнки
       setTimeout(() => {
         systemBeep(850, 0.22);
         print("POST Check: SUCCESSFUL. Beep 1x.");
       }, 850);
 
-      // Загрузка системы
       setTimeout(() => {
         print("--------------------------------------------------");
         print("BOOTING DAMN_OS KERNEL 6.8.9-arch-damn...");
         print("MOUNTING /dev/nvme0n1p2 ON / [OK]");
-        print("ESTABLISHING CLOUDFLARE EDGE BRIDGE... [CONNECTED]");
+        print("ESTABLISHING FIREBASE CLUSTER BRIDGE... [CONNECTED]");
         print("--------------------------------------------------");
         print("=== DAMN INTERACTIVE MAIN TERMINAL ===");
         print("Введите <span class='bold'>help</span> для списка директив.");
@@ -381,16 +363,13 @@
       }, 1200);
     }
 
-    /* ========================================================
-       FIREBASE BROADCAST (СЛУШАТЕЛЬ)
-       ======================================================== */
-    let broadcastAttached = false;
+    /* СЛУШАТЕЛЬ BROADCAST */
     function initBroadcastListener() {
-      if (!rtdb || broadcastAttached) return;
+      if (broadcastAttached) return;
       broadcastAttached = true;
 
-      // Слушаем изменения последнего сообщения
-      rtdb.ref('live_broadcast').limitToLast(1).on('child_added', (snapshot) => {
+      const broadcastRef = query(ref(db, 'live_broadcast'), limitToLast(1));
+      onChildAdded(broadcastRef, (snapshot) => {
         const val = snapshot.val();
         if (val && isPoweredOn) {
           systemBeep(1100, 0.25);
@@ -399,9 +378,6 @@
       });
     }
 
-    /* ========================================================
-       ОБРАБОТКА ВВОДА
-       ======================================================== */
     crt.addEventListener('click', () => {
       if (isPoweredOn) input.focus();
     });
@@ -425,9 +401,9 @@
         case 'help':
           print("СПИСОК ДИРЕКТИВ:");
           print("<span class='bold'>help, clear, whoami, specs, theme, roulette, reboot</span>");
-          print("<span class='bold'>login &lt;user&gt; &lt;pass&gt;</span> — Авторизация");
+          print("<span class='bold'>login &lt;user&gt; &lt;pass&gt;</span> — Вход администратора");
           if (isAdmin) {
-            print("<span class='alert-line'>broadcast &lt;текст&gt;</span> — Отправка алерта всем онлайн");
+            print("<span class='alert-line'>broadcast &lt;текст&gt;</span> — Глобальный алерт");
           }
           break;
 
@@ -457,7 +433,7 @@
             promptLabel.innerText = "root@damn-interactive:~#";
             promptLabel.style.color = "#ff3344";
             systemBeep(1200, 0.2);
-            print("<span class='bold' style='color:#ffff33;'>ДОСТУП ПОЛУЧЕН. Вы в режиме root. Доступна команда: broadcast &lt;текст&gt;</span>");
+            print("<span class='bold' style='color:#ffff33;'>ДОСТУП РАЗРЕШЁН. Режим root активирован. Доступна: broadcast &lt;текст&gt;</span>");
           } else {
             systemBeep(200, 0.3);
             print("<span class='alert-line'>ОШИБКА: Доступ запрещен.</span>");
@@ -466,7 +442,7 @@
 
         case 'broadcast':
           if (!isAdmin) {
-            print("<span class='alert-line'>ОТКАЗАНО. Требуются права root (login admin damn).</span>");
+            print("<span class='alert-line'>ОТКАЗАНО. Сначала введите login admin damn.</span>");
             return;
           }
           const message = args.join(' ');
@@ -474,19 +450,16 @@
             print("Использование: broadcast &lt;сообщение&gt;");
             return;
           }
-          if (rtdb) {
-            rtdb.ref('live_broadcast').push({
-              user: 'k1zo [ADMIN]',
-              msg: message,
-              timestamp: Date.now()
-            }).then(() => {
-              print("Трансляция отправлена в сеть.");
-            }).catch(e => {
-              print("<span class='alert-line'>Ошибка базы: " + e.message + "</span>");
-            });
-          } else {
-            print("<span class='alert-line'>Ошибка: База Firebase не подключена.</span>");
-          }
+
+          push(ref(db, 'live_broadcast'), {
+            user: 'k1zo [ADMIN]',
+            msg: message,
+            timestamp: Date.now()
+          }).then(() => {
+            print("Алерт успешно отправлен в сеть.");
+          }).catch(e => {
+            print("<span class='alert-line'>Ошибка Firebase: " + e.message + "</span>");
+          });
           break;
 
         case 'theme':
