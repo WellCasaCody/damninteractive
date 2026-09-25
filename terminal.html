@@ -3,130 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DAMN INTERACTIVE // TERMINAL</title>
-  
-  <!-- Firebase SDK (Compat для чистого браузерного JS) -->
+  <title>DAMN INTERACTIVE // CRT TERMINAL</title>
+
+  <!-- Firebase Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
     :root {
-      --term-color: #00ff66;
-      --term-glow: rgba(0, 255, 102, 0.4);
-      --term-bg: #050805;
+      --phosphor: #00ff66;
+      --glow: rgba(0, 255, 102, 0.55);
+      --bg: #050a05;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      user-select: none;
     }
 
     body {
-      background-color: #020202;
-      color: var(--term-color);
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 15px;
-      line-height: 1.4;
+      background-color: #080808;
       height: 100vh;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
     }
 
-    /* ЭЛТ-монитор, стекло и развёртка */
-    .crt-monitor {
+    /* Корпус олдскульного монитора */
+    .monitor-frame {
       position: relative;
-      width: 100%;
-      height: 100%;
-      background: var(--term-bg);
+      width: 95vw;
+      max-width: 1000px;
+      height: 88vh;
+      background: #151515;
+      border: 18px solid #222224;
+      border-radius: 28px;
+      box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 10px #000;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    /* Нижняя панель с кнопкой включения */
+    .bezel-bar {
+      height: 42px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      background: #1c1c1e;
+      border-radius: 0 0 14px 14px;
+      margin-top: 8px;
+      border-top: 2px solid #111;
+    }
+
+    .brand-plate {
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .power-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .power-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #330000;
+      box-shadow: none;
+      transition: all 0.3s ease;
+    }
+
+    .power-led.active {
+      background: #00ff66;
+      box-shadow: 0 0 8px #00ff66;
+    }
+
+    .power-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      background: #2a2a2a;
+      cursor: pointer;
+      outline: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    .power-btn:active {
+      transform: scale(0.92);
+      background: #1f1f1f;
+    }
+
+    .power-icon {
+      width: 10px;
+      height: 10px;
+      border: 2px solid #777;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      position: relative;
+    }
+
+    /* ЭЛТ Стеклянный экран */
+    .crt-screen {
+      position: relative;
+      flex: 1;
+      background: #000;
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding: 20px;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.95);
     }
 
-    .crt-monitor::before {
-      content: " ";
-      display: block;
+    /* Выключенное состояние */
+    .crt-screen.turned-off .screen-content {
+      display: none !important;
+    }
+
+    /* Сканлайны и ретро-развертка */
+    .scanlines {
       position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-      z-index: 20;
-      background-size: 100% 3px, 4px 100%;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 3px 100%;
       pointer-events: none;
+      z-index: 30;
+      opacity: 0.9;
     }
 
-    .crt-monitor::after {
-      content: " ";
-      display: block;
+    /* Выпуклость кинескопа */
+    .vignette {
       position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: radial-gradient(circle, transparent 65%, rgba(0, 0, 0, 0.8) 100%);
-      z-index: 21;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.85) 100%);
       pointer-events: none;
+      z-index: 31;
     }
 
-    /* Верхняя статусная строка */
-    .terminal-header {
+    /* Мерцание трубки */
+    .screen-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--phosphor);
       display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--term-color);
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 0 5px var(--term-glow);
+      flex-direction: column;
+      padding: 16px;
+      overflow: hidden;
+      animation: crtFlicker 0.15s infinite;
+      z-index: 10;
     }
 
-    /* Поле вывода логов */
+    @keyframes crtFlicker {
+      0% { opacity: 0.99; }
+      50% { opacity: 0.96; }
+      100% { opacity: 1; }
+    }
+
+    /* Область вывода терминала */
     .terminal-body {
       flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      padding-right: 10px;
-      z-index: 10;
-      text-shadow: 0 0 5px var(--term-glow);
+      gap: 3px;
+      text-shadow: 0 0 6px var(--glow);
     }
 
-    .terminal-body::-webkit-scrollbar {
-      width: 4px;
-    }
-    .terminal-body::-webkit-scrollbar-thumb {
-      background: var(--term-color);
-    }
+    .terminal-body::-webkit-scrollbar { width: 0; }
 
-    /* Строки */
-    .terminal-line {
+    .line {
       word-break: break-word;
       white-space: pre-wrap;
+      font-size: 14px;
     }
-    .highlight { color: #ffffff; font-weight: bold; }
-    .dim { opacity: 0.6; }
-    .alert { color: #ff3344 !important; font-weight: bold; text-shadow: 0 0 8px #ff3344 !important; }
-    .success { color: #ffff33; font-weight: bold; }
 
-    /* Поле ввода */
-    .input-line {
+    .dim { opacity: 0.55; }
+    .bold { font-weight: bold; color: #fff; }
+    .alert-line {
+      color: #ff3344 !important;
+      text-shadow: 0 0 8px #ff3344 !important;
+      font-weight: bold;
+    }
+
+    /* Строка ввода */
+    .input-row {
       display: flex;
       align-items: center;
-      margin-top: 10px;
-      border-top: 1px dashed rgba(255, 255, 255, 0.15);
-      padding-top: 10px;
-      z-index: 25;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 255, 102, 0.25);
     }
 
-    .prompt-prefix {
-      color: var(--term-color);
+    .prefix {
+      color: var(--phosphor);
       font-weight: bold;
-      margin-right: 10px;
-      white-space: nowrap;
-      text-shadow: 0 0 5px var(--term-glow);
+      margin-right: 8px;
+      text-shadow: 0 0 6px var(--glow);
     }
 
     #term-input {
@@ -134,196 +222,212 @@
       background: transparent;
       border: none;
       outline: none;
-      color: var(--term-color);
+      color: var(--phosphor);
       font-family: inherit;
-      font-size: inherit;
-      text-shadow: 0 0 5px var(--term-glow);
-      caret-color: var(--term-color);
+      font-size: 14px;
+      caret-color: var(--phosphor);
+      text-shadow: 0 0 6px var(--glow);
+      user-select: text;
     }
 
-    /* Аварийный глитч при смерти в рулетке */
-    .terminal-crash {
-      filter: invert(1) contrast(300%) !important;
-      animation: fatal-glitch 0.08s infinite;
-    }
-
-    @keyframes fatal-glitch {
-      0% { transform: translate(3px, -2px); }
-      50% { transform: translate(-3px, 3px); }
-      100% { transform: translate(0, 0); }
-    }
-
-    @media (max-width: 768px) {
-      body { font-size: 13px; }
-      .crt-monitor { padding: 12px; }
-      .prompt-prefix { font-size: 12px; }
+    /* Эффект выстрела рулетки */
+    .fatal-flash {
+      filter: invert(1) contrast(200%);
     }
   </style>
 </head>
 <body>
 
-  <div class="crt-monitor" id="monitor">
-    <div class="terminal-header">
-      <span>DAMN INTERACTIVE // OS 4.06-RTX</span>
-      <span id="auth-status">[USER: GUEST]</span>
-    </div>
+  <div class="monitor-frame">
+    <div class="crt-screen turned-off" id="crt">
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
 
-    <div class="terminal-body" id="term-body">
-      <div id="term-output">
-        <p class="terminal-line dim">BIOS POST CHECK ................... [OK]</p>
-        <p class="terminal-line dim">PRIMARY GPU DETECTED .............. NVIDIA RTX 4060 (8GB)</p>
-        <p class="terminal-line dim">NET_CLUSTER: CLOUDFLARE_PAGES ..... MOUNTED</p>
-        <p class="terminal-line">=== ДОБРО ПОЖАЛОВАТЬ В ТЕРМИНАЛ СТУДИИ DAMN INTERACTIVE ===</p>
-        <p class="terminal-line">Введите <span class="highlight">help</span> для списка доступных директив.</p>
+      <div class="screen-content" id="screenContent">
+        <div class="terminal-body" id="termBody">
+          <div id="output"></div>
+        </div>
+
+        <div class="input-row" id="inputBar" style="display: none;">
+          <span class="prefix" id="promptLabel">guest@damn-box:~$</span>
+          <input type="text" id="term-input" autocomplete="off" spellcheck="false">
+        </div>
       </div>
     </div>
 
-    <div class="input-line">
-      <span class="prompt-prefix" id="prompt-label">guest@damn-node:~$</span>
-      <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
+    <!-- Физическая панель монитора -->
+    <div class="bezel-bar">
+      <span class="brand-plate">DAMN CRT-VISION // MODEL-21</span>
+      <div class="power-section">
+        <div class="power-led" id="powerLed"></div>
+        <button class="power-btn" id="powerBtn" title="Power ON/OFF">
+          <div class="power-icon"></div>
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
     /* ========================================================
-       1. КОНФИГУРАЦИЯ FIREBASE REALTIME DATABASE
-       Вставь сюда свои ключи из консоли Firebase Console
+       FIREBASE ИНИЦИАЛИЗАЦИЯ
        ======================================================== */
     const firebaseConfig = {
-      apiKey: "ТВОЙ_API_KEY",
+      apiKey: "AIzaSyDummyKeyForDamnInteractive00",
       authDomain: "damninteractive.firebaseapp.com",
       databaseURL: "https://damninteractive-default-rtdb.firebaseio.com",
       projectId: "damninteractive",
       storageBucket: "damninteractive.appspot.com",
-      messagingSenderId: "000000000000",
-      appId: "1:000000000000:web:000000000000"
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef"
     };
 
     let rtdb = null;
     try {
       firebase.initializeApp(firebaseConfig);
       rtdb = firebase.database();
-    } catch (e) {
-      console.warn("Firebase не инициализирован. Заполните конфиг.");
-    }
+    } catch(e) {}
 
     /* ========================================================
-       2. ЗВУКОВОЙ ДВИЖОК (WEB AUDIO API)
+       ЧИСТЫЙ ЗВУК: ТОЛЬКО СИСТЕМНЫЙ СИСТЕМНЫЙ BEEP (БЕЗ КЛИКОВ КЛАВЫ)
        ======================================================== */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function playKeyClick() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(800 + Math.random() * 400, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.04);
-    }
-
-    function playBeep(freq = 440, duration = 0.15) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
+    function systemBeep(freq = 820, duration = 0.18) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square'; // Характерный олдскульный писк BIOS
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (err) {}
     }
 
     /* ========================================================
-       3. ЭЛЕМЕНТЫ И СОСТОЯНИЕ
+       УПРАВЛЕНИЕ ПИТАНИЕМ И ASUS BIOS POST
        ======================================================== */
-    const output = document.getElementById('term-output');
+    let isPoweredOn = false;
+    let isAdmin = sessionStorage.getItem('damn_root') === 'true';
+
+    const crt = document.getElementById('crt');
+    const powerLed = document.getElementById('powerLed');
+    const powerBtn = document.getElementById('powerBtn');
+    const output = document.getElementById('output');
     const input = document.getElementById('term-input');
-    const termBody = document.getElementById('term-body');
-    const promptLabel = document.getElementById('prompt-label');
-    const authStatus = document.getElementById('auth-status');
-    const monitor = document.getElementById('monitor');
+    const inputBar = document.getElementById('inputBar');
+    const termBody = document.getElementById('termBody');
+    const promptLabel = document.getElementById('promptLabel');
 
-    let isAdmin = sessionStorage.getItem('damn_admin') === 'true';
+    powerBtn.addEventListener('click', togglePower);
 
-    function updateSessionUI() {
-      if (isAdmin) {
-        promptLabel.innerText = "root@damn-interactive:~#";
-        authStatus.innerText = "[ACCESS LEVEL: ROOT / ADMIN]";
-        authStatus.style.color = "#ff3344";
+    function togglePower() {
+      isPoweredOn = !isPoweredOn;
+      if (isPoweredOn) {
+        powerLed.classList.add('active');
+        crt.classList.remove('turned-off');
+        runBiosBoot();
       } else {
-        promptLabel.innerText = "guest@damn-node:~$";
-        authStatus.innerText = "[USER: GUEST]";
-        authStatus.style.color = "var(--term-color)";
+        powerLed.classList.remove('active');
+        crt.classList.add('turned-off');
+        inputBar.style.display = 'none';
+        output.innerHTML = '';
       }
     }
-    updateSessionUI();
 
-    function print(text, className = '') {
-      const p = document.createElement('p');
-      p.className = `terminal-line ${className}`;
+    function print(text, cssClass = '') {
+      const p = document.createElement('div');
+      p.className = `line ${cssClass}`;
       p.innerHTML = text;
       output.appendChild(p);
       termBody.scrollTop = termBody.scrollHeight;
     }
 
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    function runBiosBoot() {
+      output.innerHTML = '';
+      inputBar.style.display = 'none';
+
+      // ASUS BIOS POST строки
+      setTimeout(() => print("ASUSTeK COMPUTER INC. BIOS VERSION 2104"), 150);
+      setTimeout(() => print("CPU: Intel(R) Core(TM) i7-13700H @ 3.40GHz"), 300);
+      setTimeout(() => print("Memory Test: 16384KB OK"), 450);
+      setTimeout(() => {
+        print("Detecting Primary Master ... RTX 4060 8GB");
+        print("Detecting Secondary Master ... NVMe PCIE SSD 1TB");
+      }, 650);
+
+      // Одиночный писк спикера материнки
+      setTimeout(() => {
+        systemBeep(850, 0.22);
+        print("POST Check: SUCCESSFUL. Beep 1x.");
+      }, 850);
+
+      // Загрузка системы
+      setTimeout(() => {
+        print("--------------------------------------------------");
+        print("BOOTING DAMN_OS KERNEL 6.8.9-arch-damn...");
+        print("MOUNTING /dev/nvme0n1p2 ON / [OK]");
+        print("ESTABLISHING CLOUDFLARE EDGE BRIDGE... [CONNECTED]");
+        print("--------------------------------------------------");
+        print("=== DAMN INTERACTIVE MAIN TERMINAL ===");
+        print("Введите <span class='bold'>help</span> для списка директив.");
+        inputBar.style.display = 'flex';
+        input.focus();
+        initBroadcastListener();
+      }, 1200);
     }
 
     /* ========================================================
-       4. СЛУШАТЕЛЬ BROADCAST (ЖИВОЙ ЭФИР ДЛЯ ВСЕХ)
+       FIREBASE BROADCAST (СЛУШАТЕЛЬ)
        ======================================================== */
-    if (rtdb) {
-      rtdb.ref('broadcast').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.text) {
-          playBeep(880, 0.3);
-          print(`<span class="alert">>>> [OVERRIDE BROADCAST BY ${escapeHtml(data.sender || 'UNKNOWN')}]:</span> <span class="highlight">${escapeHtml(data.text)}</span>`);
+    let broadcastAttached = false;
+    function initBroadcastListener() {
+      if (!rtdb || broadcastAttached) return;
+      broadcastAttached = true;
+
+      // Слушаем изменения последнего сообщения
+      rtdb.ref('live_broadcast').limitToLast(1).on('child_added', (snapshot) => {
+        const val = snapshot.val();
+        if (val && isPoweredOn) {
+          systemBeep(1100, 0.25);
+          print(`<span class="alert-line">>>> [GLOBAL BROADCAST // ${val.user}]:</span> <span class="bold">${val.msg}</span>`);
         }
       });
     }
 
     /* ========================================================
-       5. КОМАНДНЫЙ ИНТЕРПРЕТАТОР
+       ОБРАБОТКА ВВОДА
        ======================================================== */
+    crt.addEventListener('click', () => {
+      if (isPoweredOn) input.focus();
+    });
+
     input.addEventListener('keydown', (e) => {
-      playKeyClick();
       if (e.key === 'Enter') {
-        const val = input.value.trim();
-        if (val) {
-          handleCommand(val);
-        }
+        const cmd = input.value.trim();
+        if (cmd) executeCommand(cmd);
         input.value = '';
       }
     });
 
-    // Автофокус при клике в любой точке экрана
-    document.addEventListener('click', () => input.focus());
-
-    function handleCommand(raw) {
-      const parts = raw.split(/\s+/);
+    function executeCommand(str) {
+      const parts = str.split(/\s+/);
       const cmd = parts[0].toLowerCase();
       const args = parts.slice(1);
 
-      print(`${promptLabel.innerText} ${escapeHtml(raw)}`);
+      print(`${promptLabel.innerText} ${str}`);
 
-      switch (cmd) {
+      switch(cmd) {
         case 'help':
-          print("=== СПИСОК КОМАНД ЯДРА ===");
-          print("<span class='highlight'>SYSTEM:</span> help, clear, whoami, date, ping [host], reboot");
-          print("<span class='highlight'>HARDWARE:</span> specs, storage, status");
-          print("<span class='highlight'>DISPLAY:</span> theme [green | amber | cyan | red]");
-          print("<span class='highlight'>FUN:</span> roulette, matrix, scan");
-          print("<span class='highlight'>SECURITY:</span> login &lt;user&gt; &lt;pass&gt;, logout, sudo");
+          print("СПИСОК ДИРЕКТИВ:");
+          print("<span class='bold'>help, clear, whoami, specs, theme, roulette, reboot</span>");
+          print("<span class='bold'>login &lt;user&gt; &lt;pass&gt;</span> — Авторизация");
           if (isAdmin) {
-            print("<span class='alert'>ROOT ACTIVE:</span> broadcast &lt;сообщение&gt; (Трансляция всем юзерам)");
+            print("<span class='alert-line'>broadcast &lt;текст&gt;</span> — Отправка алерта всем онлайн");
           }
           break;
 
@@ -334,169 +438,101 @@
 
         case 'whoami':
           if (isAdmin) {
-            print("UID=0(root) GID=0(root) GROUPS=admin,wheel,directors");
-            print("Полный контроль над трансляцией Damn Interactive.");
+            print("USER: root | ACCESS: FULL_STUDIO_CONTROL");
           } else {
-            print("UID=1000(guest) GID=1000(damn_viewer)");
-            print("Статус: Гостевой терминал. Введите <span class='highlight'>login</span> для входа.");
+            print("USER: guest | ACCESS: RESTRICTED. Воспользуйтесь 'login'.");
           }
-          break;
-
-        case 'date':
-          print(new Date().toString());
-          break;
-
-        case 'ping':
-          const host = args[0] || 'damninteractive.ru';
-          print(`PING ${host} (104.21.72.1): 56 bytes of data.`);
-          setTimeout(() => print(`64 bytes from ${host}: icmp_seq=1 ttl=58 time=1.42 ms`), 200);
-          setTimeout(() => print(`64 bytes from ${host}: icmp_seq=2 ttl=58 time=0.89 ms`), 450);
-          setTimeout(() => print(`--- ${host} ping statistics: 0% packet loss ---`), 700);
           break;
 
         case 'specs':
-          print("--- HARDWARE RIG SPECS ---");
-          print("GPU: NVIDIA GeForce RTX 4060 Laptop (8GB GDDR6)");
-          print("AUDIO PIPELINE: DJI Dual-Channel Wireless Rig (2TX + 1RX)");
-          print("CAMERA SETUP: Mobile 4K Rig + 3-Axis Stabilizer");
-          print("HOSTING: Cloudflare Pages + Edge Realtime DB");
+          print("GPU: NVIDIA GeForce RTX 4060 Laptop (8GB)");
+          print("MIC RIG: DJI Dual Wireless Array (2TX + 1RX)");
+          print("PRODUCTION: Project 21 (Pre-production stage)");
           break;
 
-        case 'storage':
-          print("Filesystem      Size  Used Avail Use% Mounted on");
-          print("/dev/nvme0n1p2  1.0T  842G  158G  85% /footage_raw");
-          print("/dev/sda1       512G  320G  192G  63% /projects_vault");
-          break;
-
-        case 'status':
-          print(`FIREBASE RTDB: ${rtdb ? 'ONLINE' : 'OFFLINE'}`);
-          print("CRT SCANNER: SYNCHRONIZED (60Hz)");
-          print("PRODUCTION STAGE: PRE-PROD // PROJECT 21");
-          break;
-
-        /* СМЕНА ЦВЕТА ФОСФОРА */
-        case 'theme':
-          const colorMode = args[0];
-          if (colorMode === 'amber') {
-            document.documentElement.style.setProperty('--term-color', '#ffb000');
-            document.documentElement.style.setProperty('--term-glow', 'rgba(255, 176, 0, 0.4)');
-            print("Цветовая схема изменена на: AMBER CRT (Янтарь)");
-          } else if (colorMode === 'cyan') {
-            document.documentElement.style.setProperty('--term-color', '#00e5ff');
-            document.documentElement.style.setProperty('--term-glow', 'rgba(0, 229, 255, 0.4)');
-            print("Цветовая схема изменена на: CYBER CYAN (Неон)");
-          } else if (colorMode === 'red') {
-            document.documentElement.style.setProperty('--term-color', '#ff3344');
-            document.documentElement.style.setProperty('--term-glow', 'rgba(255, 51, 68, 0.4)');
-            print("Цветовая схема изменена на: EMERGENCY RED (Тревога)");
-          } else if (colorMode === 'green') {
-            document.documentElement.style.setProperty('--term-color', '#00ff66');
-            document.documentElement.style.setProperty('--term-glow', 'rgba(0, 255, 102, 0.4)');
-            print("Цветовая схема изменена на: PHOSPHOR GREEN (Классика)");
-          } else {
-            print("Использование: theme [green | amber | cyan | red]");
-          }
-          break;
-
-        /* АВТОРИЗАЦИЯ */
         case 'login':
-          const user = args[0];
-          const pass = args[1];
-          if (user === 'admin' && pass === 'damn') {
+          if (args[0] === 'admin' && args[1] === 'damn') {
             isAdmin = true;
-            sessionStorage.setItem('damn_admin', 'true');
-            updateSessionUI();
-            playBeep(1200, 0.2);
-            print("<span class='success'>ДОСТУП РАЗРЕШЁН. Права root активированы.</span>");
-            print("Вам доступна команда глобального эфира: <span class='highlight'>broadcast &lt;текст&gt;</span>");
+            sessionStorage.setItem('damn_root', 'true');
+            promptLabel.innerText = "root@damn-interactive:~#";
+            promptLabel.style.color = "#ff3344";
+            systemBeep(1200, 0.2);
+            print("<span class='bold' style='color:#ffff33;'>ДОСТУП ПОЛУЧЕН. Вы в режиме root. Доступна команда: broadcast &lt;текст&gt;</span>");
           } else {
-            playBeep(200, 0.3);
-            print("<span class='alert'>ОШИБКА: Неверный логин или пароль.</span>");
-            print("Подсказка: login [username] [password]");
+            systemBeep(200, 0.3);
+            print("<span class='alert-line'>ОШИБКА: Доступ запрещен.</span>");
           }
           break;
 
-        case 'logout':
-          isAdmin = false;
-          sessionStorage.removeItem('damn_admin');
-          updateSessionUI();
-          print("Вы вышли из системы root.");
-          break;
-
-        /* ГЛОБАЛЬНЫЙ ЭФИР FIREBASE */
         case 'broadcast':
           if (!isAdmin) {
-            print("<span class='alert'>ОТКАЗАНО В ДОСТУПЕ. Требуется авторизация через login.</span>");
+            print("<span class='alert-line'>ОТКАЗАНО. Требуются права root (login admin damn).</span>");
             return;
           }
           const message = args.join(' ');
           if (!message) {
-            print("Использование: broadcast &lt;текст сообщения&gt;");
+            print("Использование: broadcast &lt;сообщение&gt;");
             return;
           }
-          if (!rtdb) {
-            print("<span class='alert'>Ошибка: Firebase RTDB не настроен.</span>");
-            return;
+          if (rtdb) {
+            rtdb.ref('live_broadcast').push({
+              user: 'k1zo [ADMIN]',
+              msg: message,
+              timestamp: Date.now()
+            }).then(() => {
+              print("Трансляция отправлена в сеть.");
+            }).catch(e => {
+              print("<span class='alert-line'>Ошибка базы: " + e.message + "</span>");
+            });
+          } else {
+            print("<span class='alert-line'>Ошибка: База Firebase не подключена.</span>");
           }
-          rtdb.ref('broadcast').set({
-            sender: 'k1zo [ADMIN]',
-            text: message,
-            timestamp: Date.now()
-          }).then(() => {
-            print("<span class='success'>[OVERRIDE SENT] Сигнал разослан во все подключенные сессии.</span>");
-          }).catch((err) => {
-            print(`<span class='alert'>Ошибка трансляции: ${err.message}</span>`);
-          });
           break;
 
-        /* МИНИ-ИГРА РУЛЕТКА */
+        case 'theme':
+          const t = args[0];
+          if (t === 'amber') {
+            document.documentElement.style.setProperty('--phosphor', '#ffb000');
+            document.documentElement.style.setProperty('--glow', 'rgba(255, 176, 0, 0.5)');
+            print("Цвет: AMBER PHOSPHOR");
+          } else if (t === 'cyan') {
+            document.documentElement.style.setProperty('--phosphor', '#00e5ff');
+            document.documentElement.style.setProperty('--glow', 'rgba(0, 229, 255, 0.5)');
+            print("Цвет: CYBER CYAN");
+          } else if (t === 'green') {
+            document.documentElement.style.setProperty('--phosphor', '#00ff66');
+            document.documentElement.style.setProperty('--glow', 'rgba(0, 255, 102, 0.5)');
+            print("Цвет: MATRIX GREEN");
+          } else {
+            print("Варианты: theme amber | theme cyan | theme green");
+          }
+          break;
+
         case 'roulette':
-          print("Вращаем барабан... Палец на спусковом крючке...");
+          print("Барабан прокручен...");
           setTimeout(() => {
-            const roll = Math.floor(Math.random() * 6);
-            if (roll === 0) {
-              playBeep(150, 0.5);
-              print("<span class='alert'>*БАБАХ* — ПРЯМО В ВИСОК! Критический сбой терминала.</span>");
-              monitor.classList.add('terminal-crash');
-              setTimeout(() => location.reload(), 1400);
+            if (Math.random() < 0.25) {
+              systemBeep(120, 0.4);
+              print("<span class='alert-line'>*ВЫСТРЕЛ* — СИСТЕМНЫЙ КРАШ.</span>");
+              crt.classList.add('fatal-flash');
+              setTimeout(() => {
+                crt.classList.remove('fatal-flash');
+                togglePower();
+              }, 1200);
             } else {
-              playBeep(600, 0.05);
-              print("<span class='success'>*ЩЁЛК* — Патронник пуст. Ты выжил. Дыши.</span>");
+              systemBeep(650, 0.05);
+              print("Щёлк. Патронник пуст.");
             }
-          }, 800);
-          break;
-
-        case 'scan':
-          print("Сканирование портов Damn Interactive Net...");
-          let step = 0;
-          const intv = setInterval(() => {
-            step++;
-            print(`[PORT ${3000 + step * 42}] OPEN // Node: cluster_node_${step}`);
-            if (step >= 4) {
-              clearInterval(intv);
-              print("Периметр чист. Угроз не обнаружено.");
-            }
-          }, 200);
-          break;
-
-        case 'matrix':
-          document.documentElement.style.setProperty('--term-color', '#00ff66');
-          document.documentElement.style.setProperty('--term-glow', 'rgba(0, 255, 102, 0.7)');
-          print("Wake up, Neo... Follow the white rabbit.");
-          break;
-
-        case 'sudo':
-          print("user is not in the sudoers file. This incident will be reported.");
+          }, 600);
           break;
 
         case 'reboot':
-          print("Перезагрузка ядра...");
-          setTimeout(() => location.reload(), 500);
+          togglePower();
+          setTimeout(() => togglePower(), 500);
           break;
 
         default:
-          print(`Неизвестная команда: "${escapeHtml(raw)}". Введите <span class='highlight'>help</span>.`);
-          break;
+          print(`Команда не найдена: ${cmd}`);
       }
     }
   </script>
