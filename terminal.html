@@ -3,15 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DAMN INTERACTIVE // CRT TERMINAL</title>
+  <title>DAMN INTERACTIVE // WINDOWS XP PROFESSIONAL</title>
 
   <style>
-    :root {
-      --phosphor: #00ff66;
-      --glow: rgba(0, 255, 102, 0.55);
-      --bg: #050a05;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -25,16 +19,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Courier New', monospace;
+      font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
       overflow: hidden;
     }
 
-    /* Корпус монитора */
+    /* Монитор */
     .monitor-frame {
       position: relative;
-      width: 95vw;
-      max-width: 1000px;
-      height: 88vh;
+      width: 96vw;
+      max-width: 1020px;
+      height: 90vh;
       background: #151515;
       border: 18px solid #222224;
       border-radius: 28px;
@@ -44,7 +38,39 @@
       padding: 10px;
     }
 
-    /* Нижняя панель */
+    .crt-screen {
+      position: relative;
+      flex: 1;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.95);
+    }
+
+    .crt-screen.turned-off > div {
+      display: none !important;
+    }
+
+    .scanlines {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+      background-size: 100% 3px;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .vignette {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, transparent 65%, rgba(0,0,0,0.8) 100%);
+      pointer-events: none;
+      z-index: 51;
+    }
+
+    /* Нижняя панель с кнопкой включения */
     .bezel-bar {
       height: 42px;
       display: flex;
@@ -59,7 +85,7 @@
 
     .brand-plate {
       font-size: 11px;
-      color: #666;
+      color: #777;
       letter-spacing: 2px;
       font-weight: bold;
     }
@@ -75,7 +101,7 @@
       height: 8px;
       border-radius: 50%;
       background: #330000;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
     }
 
     .power-led.active {
@@ -91,136 +117,402 @@
       background: #2a2a2a;
       cursor: pointer;
       outline: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
     }
+    .power-btn:active { transform: scale(0.92); }
 
-    .power-btn:active {
-      transform: scale(0.92);
-      background: #1f1f1f;
-    }
-
-    .power-icon {
-      width: 10px;
-      height: 10px;
-      border: 2px solid #777;
-      border-top: none;
-      border-radius: 0 0 10px 10px;
-      position: relative;
-    }
-
-    /* ЭЛТ Экран */
-    .crt-screen {
-      position: relative;
-      flex: 1;
+    /* ========================================================
+       1. ASUS PRIME BIOS SCREEN
+       ======================================================== */
+    .asus-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: #000;
-      border-radius: 16px;
-      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      z-index: 20;
+    }
+
+    .asus-logo-box {
       display: flex;
       flex-direction: column;
-      box-shadow: inset 0 0 60px rgba(0,0,0,0.95);
+      align-items: center;
+      gap: 8px;
     }
 
-    .crt-screen.turned-off .screen-content {
-      display: none !important;
+    .asus-text {
+      font-family: 'Arial Black', Impact, sans-serif;
+      font-size: 52px;
+      letter-spacing: 6px;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(255,255,255,0.4);
     }
 
-    .scanlines {
+    .prime-badge {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 12px;
+      color: #a0a0a0;
+      border-top: 2px solid #666;
+      border-bottom: 2px solid #666;
+      padding: 2px 14px;
+    }
+
+    .asus-footer {
+      position: absolute;
+      bottom: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    /* BIOS SETUP UTILITY */
+    .bios-setup {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      background-size: 100% 3px, 3px 100%;
-      pointer-events: none;
-      z-index: 30;
-      opacity: 0.9;
-    }
-
-    .vignette {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.85) 100%);
-      pointer-events: none;
-      z-index: 31;
-    }
-
-    .screen-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-      color: var(--phosphor);
-      display: flex;
-      flex-direction: column;
+      background: #0000a8;
+      color: #fff;
       padding: 16px;
-      overflow: hidden;
-      animation: crtFlicker 0.15s infinite;
+      display: none;
+      z-index: 25;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      border: 3px double #fff;
+    }
+
+    /* ========================================================
+       2. WINDOWS XP LOGIN (WELCOME SCREEN)
+       ======================================================== */
+    .xp-login-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #5a7edc;
+      display: none;
+      flex-direction: column;
       z-index: 10;
     }
 
-    @keyframes crtFlicker {
-      0% { opacity: 0.99; }
-      50% { opacity: 0.96; }
-      100% { opacity: 1; }
+    .xp-login-top {
+      height: 80px;
+      background: #003399;
+      border-bottom: 2px solid #fff;
     }
 
-    .terminal-body {
+    .xp-login-bottom {
+      height: 80px;
+      background: #003399;
+      border-top: 2px solid #fff;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .xp-login-center {
       flex: 1;
-      overflow-y: auto;
+      display: flex;
+      background: linear-gradient(to right, #5a7edc 0%, #3a60bf 50%, #5a7edc 100%);
+    }
+
+    .xp-login-left {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      text-shadow: 0 0 6px var(--glow);
+      justify-content: center;
+      align-items: flex-end;
+      padding-right: 40px;
+      border-right: 1px solid rgba(255,255,255,0.3);
     }
 
-    .terminal-body::-webkit-scrollbar { width: 0; }
+    .xp-logo-large {
+      text-align: right;
+      color: #fff;
+    }
+    .xp-logo-large h1 { font-size: 32px; font-weight: bold; font-style: italic; }
+    .xp-logo-large span { font-size: 16px; color: #ff9933; font-weight: bold; }
 
-    .line {
+    .xp-login-right {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      padding-left: 40px;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      width: 280px;
+    }
+    .user-card:hover { background: rgba(255,255,255,0.15); }
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffcc00;
+      font-size: 26px;
+    }
+
+    .user-info { display: flex; flex-direction: column; gap: 4px; }
+    .user-name { color: #fff; font-size: 16px; font-weight: bold; }
+
+    .pass-box {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .pass-input {
+      padding: 4px 6px;
+      font-size: 13px;
+      width: 140px;
+      border: 1px solid #7f9db9;
+      outline: none;
+    }
+    .pass-btn {
+      padding: 3px 8px;
+      background: #00aa00;
+      border: 1px solid #fff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ========================================================
+       3. WINDOWS XP DESKTOP
+       ======================================================== */
+    .xp-desktop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #245edb url('https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png') no-repeat center center / cover;
+      display: none;
+      flex-direction: column;
+      z-index: 5;
+    }
+
+    .desktop-area {
+      flex: 1;
+      position: relative;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .desktop-icon {
+      width: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      gap: 4px;
+    }
+    .desktop-icon:hover {
+      background: rgba(49, 106, 197, 0.4);
+      outline: 1px dotted #fff;
+    }
+    .desktop-icon .ico { font-size: 32px; }
+    .desktop-icon span {
+      color: #fff;
+      font-size: 11px;
+      text-shadow: 1px 1px 2px #000;
       word-break: break-word;
-      white-space: pre-wrap;
+    }
+
+    /* Панель задач */
+    .taskbar {
+      height: 32px;
+      background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #1941a5 92%, #1941a5 100%);
+      display: flex;
+      align-items: center;
+      z-index: 40;
+    }
+
+    .start-btn {
+      width: 100px;
+      height: 100%;
+      background: linear-gradient(to bottom, #388e3c 0%, #4caf50 50%, #2e7d32 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 0 10px 10px 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+      font-weight: bold;
+      font-style: italic;
+      color: #fff;
       font-size: 14px;
     }
 
-    .dim { opacity: 0.55; }
-    .bold { font-weight: bold; color: #fff; }
-    .alert-line {
-      color: #ff3344 !important;
-      text-shadow: 0 0 8px #ff3344 !important;
-      font-weight: bold;
-    }
-
-    .input-row {
+    .task-tray {
+      margin-left: auto;
+      height: 100%;
+      background: #0f80d6;
+      border-left: 1px solid #165ab7;
       display: flex;
       align-items: center;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed rgba(0, 255, 102, 0.25);
+      padding: 0 12px;
+      color: #fff;
+      font-size: 11px;
     }
 
-    .prefix {
-      color: var(--phosphor);
+    /* Окна XP */
+    .xp-window {
+      position: absolute;
+      background: #ece9d8;
+      border: 3px solid #0055ea;
+      border-radius: 5px 5px 0 0;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .window-header {
+      height: 26px;
+      background: linear-gradient(to right, #0058ee 0%, #3593ff 50%, #288eff 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      font-size: 12px;
       font-weight: bold;
-      margin-right: 8px;
-      text-shadow: 0 0 6px var(--glow);
+      cursor: move;
     }
 
-    #term-input {
+    .close-box {
+      width: 18px;
+      height: 18px;
+      background: #d84a38;
+      border: 1px solid #fff;
+      border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* САПЁР */
+    #minesweeperWindow { width: 220px; top: 80px; left: 80px; }
+    .mine-content {
+      padding: 8px;
+      background: #c0c0c0;
+      border: 3px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mine-topbar {
+      border: 2px solid #808080;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px;
+      background: #c0c0c0;
+    }
+    .mine-counter {
+      background: #000;
+      color: #ff0000;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 2px 4px;
+    }
+    .face-btn {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    .mine-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 20px);
+      gap: 1px;
+      background: #808080;
+      border: 2px solid #808080;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+    .mine-cell {
+      width: 20px;
+      height: 20px;
+      background: #c0c0c0;
+      border: 2px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .mine-cell.revealed {
+      border: 1px solid #7b7b7b;
+      background: #c0c0c0;
+    }
+
+    /* CMD ОКНО */
+    #cmdWindow {
+      width: 580px;
+      height: 360px;
+      top: 50px;
+      left: 120px;
+    }
+    .cmd-body {
+      flex: 1;
+      background: #000;
+      color: #00ff66;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 8px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      user-select: text;
+    }
+    .cmd-input-row {
+      display: flex;
+      background: #000;
+      padding: 4px 8px;
+    }
+    .cmd-prefix { color: #00ff66; font-family: 'Courier New', monospace; margin-right: 6px; }
+    #cmd-input {
       flex: 1;
       background: transparent;
       border: none;
       outline: none;
-      color: var(--phosphor);
-      font-family: inherit;
-      font-size: 14px;
-      caret-color: var(--phosphor);
-      text-shadow: 0 0 6px var(--glow);
-      user-select: text;
-    }
-
-    .fatal-flash {
-      filter: invert(1) contrast(200%);
+      color: #00ff66;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -231,33 +523,136 @@
       <div class="scanlines"></div>
       <div class="vignette"></div>
 
-      <div class="screen-content" id="screenContent">
-        <div class="terminal-body" id="termBody">
-          <div id="output"></div>
+      <!-- 1. ЭКРАН ASUS PRIME -->
+      <div class="asus-screen" id="asusScreen">
+        <div class="asus-logo-box">
+          <div class="asus-text">ASUS</div>
+          <div class="prime-badge">PRIME</div>
         </div>
-
-        <div class="input-row" id="inputBar" style="display: none;">
-          <span class="prefix" id="promptLabel">guest@damn-box:~$</span>
-          <input type="text" id="term-input" autocomplete="off" spellcheck="false">
+        <div class="asus-footer">
+          Press [DEL] or [F2] to enter ASUS UEFI / BIOS Setup
         </div>
       </div>
+
+      <!-- 2. СИНИЙ BIOS SETUP -->
+      <div class="bios-setup" id="biosSetup">
+        <div style="background:#a8a8a8; color:#0000a8; text-align:center; font-weight:bold; margin-bottom:10px;">
+          ASUSTeK Motherboard BIOS CMOS Setup Utility
+        </div>
+        <div>Processor : Intel(R) Pentium(R) 4 CPU 3.00GHz</div>
+        <div>System Memory : 1048576 KB (1024 MB DDR-400)</div>
+        <div>Primary Master : Seagate ST350014A 50GB IDE</div>
+        <div>Display Adapter : NVIDIA GeForce FX 5200 (128MB)</div>
+        <div style="margin-top:20px; color:#ffff55;">Press [ESC] to Exit BIOS and Boot Windows XP...</div>
+      </div>
+
+      <!-- 3. WINDOWS XP LOGIN -->
+      <div class="xp-login-screen" id="xpLogin">
+        <div class="xp-login-top"></div>
+        <div class="xp-login-center">
+          <div class="xp-login-left">
+            <div class="xp-logo-large">
+              <h1>Microsoft</h1>
+              <h2>Windows<span>XP</span></h2>
+            </div>
+          </div>
+          <div class="xp-login-right">
+            <!-- Администратор -->
+            <div class="user-card" id="adminUserCard">
+              <div class="user-avatar"> Chess </div>
+              <div class="user-info">
+                <div class="user-name">k1zo [Administrator]</div>
+                <div class="pass-box" id="passBox">
+                  <input type="password" class="pass-input" id="passInput" placeholder="Password: damn">
+                  <button class="pass-btn" id="passBtn">➜</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Гость -->
+            <div class="user-card" id="guestUserCard">
+              <div class="user-avatar" style="background:#55bbff;"> Astronaut </div>
+              <div class="user-info">
+                <div class="user-name">Guest</div>
+                <div style="font-size:11px; color:#ddd;">No password required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="xp-login-bottom">
+          <span style="color:#fff; font-size:12px;">To begin, click your user name</span>
+        </div>
+      </div>
+
+      <!-- 4. WINDOWS XP DESKTOP -->
+      <div class="xp-desktop" id="xpDesktop">
+        <div class="desktop-area">
+          <div class="desktop-icon" id="openCmd">
+            <div class="ico">💻</div>
+            <span>Command Prompt</span>
+          </div>
+          <div class="desktop-icon" id="openMines">
+            <div class="ico">💣</div>
+            <span>Minesweeper</span>
+          </div>
+        </div>
+
+        <!-- Окно Сапера -->
+        <div class="xp-window" id="minesweeperWindow">
+          <div class="window-header">
+            <span>Minesweeper</span>
+            <div class="close-box" id="closeMines">✕</div>
+          </div>
+          <div class="mine-content">
+            <div class="mine-topbar">
+              <div class="mine-counter" id="mineBombCount">010</div>
+              <div class="face-btn" id="faceBtn">🙂</div>
+              <div class="mine-counter" id="mineTimer">000</div>
+            </div>
+            <div class="mine-grid" id="mineGrid"></div>
+          </div>
+        </div>
+
+        <!-- Окно Терминала (CMD) -->
+        <div class="xp-window" id="cmdWindow">
+          <div class="window-header">
+            <span>Command Prompt [cmd.exe]</span>
+            <div class="close-box" id="closeCmd">✕</div>
+          </div>
+          <div class="cmd-body" id="cmdOutput">
+            <div>Microsoft Windows XP [Version 5.1.2600]</div>
+            <div>(C) Copyright 1985-2001 Microsoft Corp.</div>
+            <div style="margin-bottom:6px;">Type 'help' for command list.</div>
+          </div>
+          <div class="cmd-input-row">
+            <span class="cmd-prefix" id="cmdPrefix">C:\&gt;</span>
+            <input type="text" id="cmd-input" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <!-- Панель задач -->
+        <div class="taskbar">
+          <div class="start-btn">
+            <span style="font-size:16px;">⊞</span> start
+          </div>
+          <div class="task-tray" id="trayTime">12:00 PM</div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Кнопка питания на рамке -->
+    <!-- Кнопка питания -->
     <div class="bezel-bar">
-      <span class="brand-plate">DAMN CRT-VISION // MODEL-21</span>
+      <span class="brand-plate">DAMN CRT // ASUS PRIME EDITION</span>
       <div class="power-section">
         <div class="power-led" id="powerLed"></div>
-        <button class="power-btn" id="powerBtn" title="Power ON/OFF">
-          <div class="power-icon"></div>
-        </button>
+        <button class="power-btn" id="powerBtn" title="Power"></button>
       </div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
     import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -267,245 +662,333 @@
       projectId: "damn-terminal",
       storageBucket: "damn-terminal.firebasestorage.app",
       messagingSenderId: "841655132645",
-      appId: "1:841655132645:web:eac7043a5875561b894f0c",
-      measurementId: "G-NNTF3GYQE8"
+      appId: "1:841655132645:web:eac7043a5875561b894f0c"
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getDatabase(app);
 
-    /* ЗВУКОВОЙ СИСТЕМНЫЙ BEEP (БЕЗ ЗВУКОВ КЛАВИШ) */
+    /* ЗВУК BEEP */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function systemBeep(freq = 820, duration = 0.18) {
+    function beep(freq = 820, dur = 0.18) {
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (err) {}
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        o.stop(audioCtx.currentTime + dur);
+      } catch(e) {}
     }
 
-    /* ЭЛЕМЕНТЫ И СОСТОЯНИЕ */
-    let isPoweredOn = false;
-    let isAdmin = sessionStorage.getItem('damn_root') === 'true';
-    let broadcastAttached = false;
+    /* СОСТОЯНИЕ */
+    let isPowered = false;
+    let currentUser = null; // 'admin' | 'guest'
+    let qteActive = false;
+    let inBios = false;
+    let bootTimer = null;
 
     const crt = document.getElementById('crt');
     const powerLed = document.getElementById('powerLed');
     const powerBtn = document.getElementById('powerBtn');
-    const output = document.getElementById('output');
-    const input = document.getElementById('term-input');
-    const inputBar = document.getElementById('inputBar');
-    const termBody = document.getElementById('termBody');
-    const promptLabel = document.getElementById('promptLabel');
+    const asusScreen = document.getElementById('asusScreen');
+    const biosSetup = document.getElementById('biosSetup');
+    const xpLogin = document.getElementById('xpLogin');
+    const xpDesktop = document.getElementById('xpDesktop');
 
-    powerBtn.addEventListener('click', togglePower);
-
-    function togglePower() {
-      isPoweredOn = !isPoweredOn;
-      if (isPoweredOn) {
+    powerBtn.addEventListener('click', () => {
+      isPowered = !isPowered;
+      clearTimeout(bootTimer);
+      if (isPowered) {
         powerLed.classList.add('active');
         crt.classList.remove('turned-off');
-        runBiosBoot();
+        startAsusBoot();
       } else {
         powerLed.classList.remove('active');
         crt.classList.add('turned-off');
-        inputBar.style.display = 'none';
-        output.innerHTML = '';
+        asusScreen.style.display = 'none';
+        biosSetup.style.display = 'none';
+        xpLogin.style.display = 'none';
+        xpDesktop.style.display = 'none';
+      }
+    });
+
+    /* ЗАГРУЗКА ASUS PRIME */
+    function startAsusBoot() {
+      asusScreen.style.display = 'flex';
+      qteActive = true;
+      inBios = false;
+
+      // Одиночный писк ASUS BIOS POST
+      setTimeout(() => beep(850, 0.2), 600);
+
+      bootTimer = setTimeout(() => {
+        qteActive = false;
+        asusScreen.style.display = 'none';
+        showLoginScreen();
+      }, 2400);
+    }
+
+    /* QTE НА БИОС */
+    window.addEventListener('keydown', (e) => {
+      if (qteActive && (e.key === 'Delete' || e.key === 'F2')) {
+        clearTimeout(bootTimer);
+        qteActive = false;
+        inBios = true;
+        asusScreen.style.display = 'none';
+        biosSetup.style.display = 'block';
+        beep(1200, 0.1);
+      } else if (inBios && e.key === 'Escape') {
+        inBios = false;
+        biosSetup.style.display = 'none';
+        showLoginScreen();
+      }
+    });
+
+    /* LOGIN SCREEN */
+    function showLoginScreen() {
+      xpLogin.style.display = 'flex';
+    }
+
+    const adminCard = document.getElementById('adminUserCard');
+    const guestCard = document.getElementById('guestUserCard');
+    const passBox = document.getElementById('passBox');
+    const passInput = document.getElementById('passInput');
+    const passBtn = document.getElementById('passBtn');
+
+    adminCard.addEventListener('click', () => {
+      passBox.style.display = 'flex';
+      passInput.focus();
+    });
+
+    function checkAdminPass() {
+      if (passInput.value === 'damn') {
+        currentUser = 'admin';
+        loginToDesktop();
+      } else {
+        beep(200, 0.3);
+        passInput.value = '';
+        alert('Неверный пароль!');
       }
     }
 
-    function print(text, cssClass = '') {
-      const p = document.createElement('div');
-      p.className = `line ${cssClass}`;
-      p.innerHTML = text;
-      output.appendChild(p);
-      termBody.scrollTop = termBody.scrollHeight;
+    passBtn.addEventListener('click', checkAdminPass);
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkAdminPass();
+    });
+
+    guestCard.addEventListener('click', () => {
+      currentUser = 'guest';
+      loginToDesktop();
+    });
+
+    function loginToDesktop() {
+      xpLogin.style.display = 'none';
+      xpDesktop.style.display = 'flex';
+      updateClock();
+      document.getElementById('cmdPrefix').innerText = currentUser === 'admin' ? 'C:\\ADMIN> ' : 'C:\\GUEST> ';
+      initBroadcast();
     }
 
-    function runBiosBoot() {
-      output.innerHTML = '';
-      inputBar.style.display = 'none';
-
-      setTimeout(() => print("ASUSTeK COMPUTER INC. BIOS VERSION 2104"), 150);
-      setTimeout(() => print("CPU: Intel(R) Core(TM) i7-13700H @ 3.40GHz"), 300);
-      setTimeout(() => print("Memory Test: 16384KB OK"), 450);
-      setTimeout(() => {
-        print("Detecting Primary Master ... RTX 4060 8GB");
-        print("Detecting Secondary Master ... NVMe PCIE SSD 1TB");
-      }, 650);
-
-      setTimeout(() => {
-        systemBeep(850, 0.22);
-        print("POST Check: SUCCESSFUL. Beep 1x.");
-      }, 850);
-
-      setTimeout(() => {
-        print("--------------------------------------------------");
-        print("BOOTING DAMN_OS KERNEL 6.8.9-arch-damn...");
-        print("MOUNTING /dev/nvme0n1p2 ON / [OK]");
-        print("ESTABLISHING FIREBASE CLUSTER BRIDGE... [CONNECTED]");
-        print("--------------------------------------------------");
-        print("=== DAMN INTERACTIVE MAIN TERMINAL ===");
-        print("Введите <span class='bold'>help</span> для списка директив.");
-        inputBar.style.display = 'flex';
-        input.focus();
-        initBroadcastListener();
-      }, 1200);
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('trayTime').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      setTimeout(updateClock, 30000);
     }
 
-    /* СЛУШАТЕЛЬ BROADCAST */
-    function initBroadcastListener() {
-      if (broadcastAttached) return;
-      broadcastAttached = true;
+    /* ОКНА */
+    const cmdWin = document.getElementById('cmdWindow');
+    const minesWin = document.getElementById('minesweeperWindow');
+    document.getElementById('openCmd').addEventListener('click', () => cmdWin.style.display = 'flex');
+    document.getElementById('closeCmd').addEventListener('click', () => cmdWin.style.display = 'none');
+    document.getElementById('openMines').addEventListener('click', () => {
+      minesWin.style.display = 'flex';
+      initMinesweeper();
+    });
+    document.getElementById('closeMines').addEventListener('click', () => minesWin.style.display = 'none');
 
-      const broadcastRef = query(ref(db, 'live_broadcast'), limitToLast(1));
-      onChildAdded(broadcastRef, (snapshot) => {
-        const val = snapshot.val();
-        if (val && isPoweredOn) {
-          systemBeep(1100, 0.25);
-          print(`<span class="alert-line">>>> [GLOBAL BROADCAST // ${val.user}]:</span> <span class="bold">${val.msg}</span>`);
+    /* CMD ЛОГИКА */
+    const cmdInput = document.getElementById('cmd-input');
+    const cmdOutput = document.getElementById('cmdOutput');
+
+    function printCmd(text, isAlert = false) {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      if (isAlert) div.style.color = '#ff3344';
+      cmdOutput.appendChild(div);
+      cmdOutput.scrollTop = cmdOutput.scrollHeight;
+    }
+
+    cmdInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = cmdInput.value.trim();
+        cmdInput.value = '';
+        if (val) handleCmd(val);
+      }
+    });
+
+    function handleCmd(raw) {
+      const parts = raw.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      printCmd(`C:\\> ${raw}`);
+
+      switch(cmd) {
+        case 'help':
+          printCmd("Available: DIR, SPECS, CLEAR, BROADCAST, ROULETTE, EXIT");
+          break;
+        case 'clear':
+        case 'cls':
+          cmdOutput.innerHTML = '';
+          break;
+        case 'specs':
+          printCmd("CPU: Intel Pentium 4 HT @ 3.00GHz | RAM: 1024MB | HDD: 50GB Seagate | GPU: GeForce FX 5200");
+          break;
+        case 'dir':
+          printCmd(" Directory of C:\\");
+          printCmd("04/09/2026  04:20 PM    &lt;DIR&gt;          WINDOWS");
+          printCmd("04/09/2026  04:20 PM    &lt;DIR&gt;          Program Files");
+          printCmd("25/09/2026  09:12 PM             1,024 PROJ21.TXT");
+          break;
+        case 'broadcast':
+          if (currentUser !== 'admin') {
+            printCmd("Access denied: Administrator privilege required.", true);
+            return;
+          }
+          const msg = args.join(' ');
+          if (!msg) {
+            printCmd("Usage: broadcast &lt;text&gt;");
+            return;
+          }
+          push(ref(db, 'live_broadcast'), {
+            user: 'k1zo [ADMIN]',
+            msg: msg,
+            timestamp: Date.now()
+          }).then(() => {
+            printCmd("Broadcast successfully pushed to network.");
+          });
+          break;
+        case 'roulette':
+          printCmd("Spinning chamber...");
+          setTimeout(() => {
+            if (Math.random() < 0.25) {
+              beep(120, 0.4);
+              printCmd("BANG! Fatal Blue Screen of Death.", true);
+              setTimeout(() => location.reload(), 1200);
+            } else {
+              beep(600, 0.05);
+              printCmd("Click. Empty.");
+            }
+          }, 600);
+          break;
+        default:
+          printCmd(`'${cmd}' is not recognized as an internal or external command.`);
+      }
+    }
+
+    /* FIREBASE СЛУШАТЕЛЬ */
+    let bcStarted = false;
+    function initBroadcast() {
+      if (bcStarted) return;
+      bcStarted = true;
+      const bRef = query(ref(db, 'live_broadcast'), limitToLast(1));
+      onChildAdded(bRef, (snap) => {
+        const d = snap.val();
+        if (d && isPowered) {
+          beep(1000, 0.25);
+          printCmd(`>>> [OVERRIDE // ${d.user}]: ${d.msg}`, true);
         }
       });
     }
 
-    crt.addEventListener('click', () => {
-      if (isPoweredOn) input.focus();
-    });
+    /* САПЁР */
+    const gridEl = document.getElementById('mineGrid');
+    const faceBtn = document.getElementById('faceBtn');
+    let board = [];
+    const size = 9;
+    const bombs = 10;
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const cmd = input.value.trim();
-        if (cmd) executeCommand(cmd);
-        input.value = '';
+    faceBtn.addEventListener('click', initMinesweeper);
+
+    function initMinesweeper() {
+      faceBtn.innerText = "🙂";
+      gridEl.innerHTML = '';
+      board = Array(size).fill().map(() => Array(size).fill().map(() => ({ bomb: false, rev: false, flag: false, count: 0 })));
+
+      let placed = 0;
+      while(placed < bombs) {
+        let r = Math.floor(Math.random() * size);
+        let c = Math.floor(Math.random() * size);
+        if (!board[r][c].bomb) {
+          board[r][c].bomb = true;
+          placed++;
+        }
       }
-    });
 
-    function executeCommand(str) {
-      const parts = str.split(/\s+/);
-      const cmd = parts[0].toLowerCase();
-      const args = parts.slice(1);
-
-      print(`${promptLabel.innerText} ${str}`);
-
-      switch(cmd) {
-        case 'help':
-          print("СПИСОК ДИРЕКТИВ:");
-          print("<span class='bold'>help, clear, whoami, specs, theme, roulette, reboot</span>");
-          print("<span class='bold'>login &lt;user&gt; &lt;pass&gt;</span> — Вход администратора");
-          if (isAdmin) {
-            print("<span class='alert-line'>broadcast &lt;текст&gt;</span> — Глобальный алерт");
-          }
-          break;
-
-        case 'clear':
-        case 'cls':
-          output.innerHTML = '';
-          break;
-
-        case 'whoami':
-          if (isAdmin) {
-            print("USER: root | ACCESS: FULL_STUDIO_CONTROL");
-          } else {
-            print("USER: guest | ACCESS: RESTRICTED. Воспользуйтесь 'login'.");
-          }
-          break;
-
-        case 'specs':
-          print("GPU: NVIDIA GeForce RTX 4060 Laptop (8GB)");
-          print("MIC RIG: DJI Dual Wireless Array (2TX + 1RX)");
-          print("PRODUCTION: Project 21 (Pre-production stage)");
-          break;
-
-        case 'login':
-          if (args[0] === 'admin' && args[1] === 'damn') {
-            isAdmin = true;
-            sessionStorage.setItem('damn_root', 'true');
-            promptLabel.innerText = "root@damn-interactive:~#";
-            promptLabel.style.color = "#ff3344";
-            systemBeep(1200, 0.2);
-            print("<span class='bold' style='color:#ffff33;'>ДОСТУП РАЗРЕШЁН. Режим root активирован. Доступна: broadcast &lt;текст&gt;</span>");
-          } else {
-            systemBeep(200, 0.3);
-            print("<span class='alert-line'>ОШИБКА: Доступ запрещен.</span>");
-          }
-          break;
-
-        case 'broadcast':
-          if (!isAdmin) {
-            print("<span class='alert-line'>ОТКАЗАНО. Сначала введите login admin damn.</span>");
-            return;
-          }
-          const message = args.join(' ');
-          if (!message) {
-            print("Использование: broadcast &lt;сообщение&gt;");
-            return;
-          }
-
-          push(ref(db, 'live_broadcast'), {
-            user: 'k1zo [ADMIN]',
-            msg: message,
-            timestamp: Date.now()
-          }).then(() => {
-            print("Алерт успешно отправлен в сеть.");
-          }).catch(e => {
-            print("<span class='alert-line'>Ошибка Firebase: " + e.message + "</span>");
-          });
-          break;
-
-        case 'theme':
-          const t = args[0];
-          if (t === 'amber') {
-            document.documentElement.style.setProperty('--phosphor', '#ffb000');
-            document.documentElement.style.setProperty('--glow', 'rgba(255, 176, 0, 0.5)');
-            print("Цвет: AMBER PHOSPHOR");
-          } else if (t === 'cyan') {
-            document.documentElement.style.setProperty('--phosphor', '#00e5ff');
-            document.documentElement.style.setProperty('--glow', 'rgba(0, 229, 255, 0.5)');
-            print("Цвет: CYBER CYAN");
-          } else if (t === 'green') {
-            document.documentElement.style.setProperty('--phosphor', '#00ff66');
-            document.documentElement.style.setProperty('--glow', 'rgba(0, 255, 102, 0.5)');
-            print("Цвет: MATRIX GREEN");
-          } else {
-            print("Варианты: theme amber | theme cyan | theme green");
-          }
-          break;
-
-        case 'roulette':
-          print("Барабан прокручен...");
-          setTimeout(() => {
-            if (Math.random() < 0.25) {
-              systemBeep(120, 0.4);
-              print("<span class='alert-line'>*ВЫСТРЕЛ* — СИСТЕМНЫЙ КРАШ.</span>");
-              crt.classList.add('fatal-flash');
-              setTimeout(() => {
-                crt.classList.remove('fatal-flash');
-                togglePower();
-              }, 1200);
-            } else {
-              systemBeep(650, 0.05);
-              print("Щёлк. Патронник пуст.");
+      for (let r=0; r<size; r++) {
+        for (let c=0; c<size; c++) {
+          if (!board[r][c].bomb) {
+            let cnt = 0;
+            for(let dr=-1; dr<=1; dr++) {
+              for(let dc=-1; dc<=1; dc++) {
+                if (r+dr>=0 && r+dr<size && c+dc>=0 && c+dc<size && board[r+dr][c+dc].bomb) cnt++;
+              }
             }
-          }, 600);
-          break;
+            board[r][c].count = cnt;
+          }
+        }
+      }
 
-        case 'reboot':
-          togglePower();
-          setTimeout(() => togglePower(), 500);
-          break;
+      for (let r=0; r<size; r++) {
+        for (let c=0; c<size; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'mine-cell';
+          cell.addEventListener('click', () => clickCell(r, c, cell));
+          cell.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            toggleFlag(r, c, cell);
+          });
+          gridEl.appendChild(cell);
+        }
+      }
+    }
 
-        default:
-          print(`Команда не найдена: ${cmd}`);
+    function toggleFlag(r, c, el) {
+      if (board[r][c].rev) return;
+      board[r][c].flag = !board[r][c].flag;
+      el.innerText = board[r][c].flag ? '🚩' : '';
+    }
+
+    function clickCell(r, c, el) {
+      if (board[r][c].rev || board[r][c].flag) return;
+      board[r][c].rev = true;
+      el.classList.add('revealed');
+
+      if (board[r][c].bomb) {
+        el.innerText = '💣';
+        faceBtn.innerText = "😵";
+        beep(150, 0.4);
+        alert("GAME OVER!");
+      } else {
+        if (board[r][c].count > 0) {
+          el.innerText = board[r][c].count;
+        } else {
+          // Открытие пустых
+          for(let dr=-1; dr<=1; dr++) {
+            for(let dc=-1; dc<=1; dc++) {
+              if (r+dr>=0 && r+dr<size && c+dc>=0 && c+dc<size) {
+                const neighborIndex = (r+dr)*size + (c+dc);
+                clickCell(r+dr, c+dc, gridEl.children[neighborIndex]);
+              }
+            }
+          }
+        }
       }
     }
   </script>
