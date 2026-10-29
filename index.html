@@ -357,7 +357,6 @@
     <div class="video-wrapper">
       <video id="introVideo" autoplay loop muted playsinline preload="auto">
         <source src="damn%20interactive.mp4" type="video/mp4" />
-        <source src="damn interactive.mp4" type="video/mp4" />
         Ваш браузер не поддерживает видео.
       </video>
     </div>
@@ -423,12 +422,20 @@
     </div>
   </footer>
 
+  <!-- ARG CLUE LAYER 00: [SYSTEM NODE ACTIVE // HASH: 7365656b] -->
+
   <script>
     function openModal() { document.getElementById('contactModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('contactModal').style.display = 'none'; }
 
+    // Закрытие модалки по клавише Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
     function copyEmail() {
-      navigator.clipboard.writeText("production@damninteractive.ru").then(() => {
+      const email = document.getElementById('mailText').innerText.trim();
+      navigator.clipboard.writeText(email).then(() => {
         const hint = document.getElementById("copyHint");
         hint.innerText = "✓ Скопировано в буфер обмена!";
         hint.style.color = "#00ff66";
@@ -440,6 +447,10 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Консольный след для любителей F12
+      console.log("%c[DAMN INTERACTIVE // NODE 01]", "color: #ff2a2a; font-family: monospace; font-size: 14px; font-weight: bold;");
+      console.log("%cAccess level: GUEST. Looking for signals?", "color: #8b9099; font-family: monospace;");
+
       const vid = document.getElementById('introVideo');
       if (vid) {
         vid.muted = true;
