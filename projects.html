@@ -1,220 +1,54 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090b">
+  <meta name="description" content="Damn Interactive — независимая команда короткометражного кино.">
   <title>Фильмы и проекты // damn interactive</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #070708;
-      --card-bg: #0f1012;
-      --border: #202226;
-      --text: #e6e6e6;
-      --text-dim: #8b9099;
-      --accent: #ff2a2a;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
-      line-height: 1.6;
-    }
-
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(7, 7, 8, 0.9);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .brand { font-weight: 700; color: #fff; text-decoration: none; }
-    .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
-    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
-    .nav-links a:hover { color: #fff; }
-
-    main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem; }
-
-    .page-title {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-    }
-    .page-desc {
-      color: var(--text-dim);
-      margin-bottom: 3rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1.5rem;
-    }
-
-    /* Флагман: Project 21 */
-    .project-hero {
-      background: linear-gradient(145deg, #180909 0%, #0d0e11 100%);
-      border: 1px solid #4a1515;
-      border-radius: 12px;
-      padding: 2.5rem;
-      margin-bottom: 3.5rem;
-      position: relative;
-    }
-    .status-badge {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      font-weight: bold;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-    }
-    .project-hero h2 { font-size: 2.2rem; margin-bottom: 0.5rem; }
-    .subtitle { color: var(--accent); font-weight: bold; margin-bottom: 1rem; text-transform: uppercase; }
-
-    /* Сетка фильмов */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .film-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.75rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.2s;
-    }
-    .film-card:hover { border-color: #444; transform: translateY(-3px); }
-    .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; }
-    .film-card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; }
-    .film-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
-    
-    .film-meta-box {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .film-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: #e6e6e6;
-      background: #18191c;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #2a2c33;
-    }
-
-    .loc-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: #8b9099;
-      background: #121316;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      border: 1px dashed #333;
-    }
-
-    footer {
-      border-top: 1px solid var(--border); padding: 3rem 1.5rem 2rem;
-      text-align: center; font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem; color: var(--text-dim); margin-top: 4rem;
-    }
-
-    .arg-trigger {
-      display: inline-block;
-      margin-top: 1.5rem;
-      color: #1e2025;
-      text-decoration: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      font-weight: bold;
-      transition: color 0.3s;
-      user-select: none;
-    }
-    .arg-trigger:hover {
-      color: var(--accent);
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-
-  <nav>
-    <a href="index.html" class="brand">damn interactive</a>
-    <div class="nav-links">
-      <a href="index.html">Главная</a>
-      <a href="projects.html" style="color: #fff;">Фильмы</a>
-      <a href="gear.html">Сетап</a>
-      <a href="about.html">О нас</a>
-    </div>
+<header class="site-header">
+  <a class="brand" href="index.html">damn <span>interactive</span></a>
+  <nav class="site-nav" aria-label="Основная навигация">
+    <a href="index.html" >Главная</a>
+    <a href="projects.html" aria-current="page">Фильмы</a>
+    <a href="gear.html" >Сетап</a>
+    <a href="about.html" >О нас</a>
   </nav>
+</header>
+<main class="container page-shell">
+  <div class="eyebrow">Filmography / 2026</div>
+  <h1 class="display-title">Истории, снятые <em>своими руками.</em></h1>
+  <p class="lead">Короткометражки, эксперименты и проекты в разработке. От первых съёмок на смартфон до новых постановочных идей.</p>
+  <div class="rule-label">Selected works / Projects</div>
 
-  <main>
-    <h1 class="page-title">Фильмы и проекты</h1>
-    <p class="page-desc">Каталог короткометражек и проектов в разработке.</p>
+  <section class="feature-project">
+    <span class="pill">В производстве / 2026</span>
+    <h2>Project 21</h2>
+    <div class="subtitle">Психологический триллер · Концентрированный саспенс</div>
+    <p>Короткометражка на 2–3 минуты, где нет времени на раскачку. Два участника оказываются за металлическим столом перед карточной партией с опасными ставками. Вдохновлено DLC «21» из Resident Evil 7.</p>
+    <div class="chips"><span class="chip">Хронометраж: 2–3 минуты</span><span class="chip">В разработке</span></div>
+  </section>
 
-    <!-- Project 21 -->
-    <div class="project-hero">
-      <span class="status-badge">В ПРОИЗВОДСТВЕ // 2026</span>
-      <h2>Project 21</h2>
-      <div class="subtitle">Психологический триллер • Концентрированный саспенс • Игра на выживание</div>
-      <p style="color: #c4c8d1; max-width: 720px; margin-bottom: 1rem;">
-        Плотная короткометражка на 2–3 минуты, где нет времени на раскачку. Пробуждение за металлическим столом, напротив противник, а между вами — работающая циркулярная пила. Ставки сделаны сразу на жизнь. Каждая взятая карта неумолимо приближает диск пилы к горлу проигравшего.
-      </p>
-      <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #888;">
-        // Хронометраж: 2-3 минуты. Вдохновлено хардкорным DLC «21» из Resident Evil 7.
-      </p>
+  <section class="section">
+    <div class="section-head"><div><div class="section-index">01 / Film series</div><h2 class="section-title">Дилогия «Уборщик»</h2></div><span class="section-note">Две истории одной серии</span></div>
+    <div class="cards-grid">
+      <article class="panel film-card">
+        <div><div class="card-tag">Слэшер / Мистика</div><h3>Уборщик</h3><p>Дебютная работа студии. История человека, чья смерть становится началом мрачной истории о мести. Первый фильм Damn Interactive, снятый на Redmi Note 10 Pro в школьных локациях.</p></div>
+        <div class="card-meta"><span>Redmi Note 10 Pro</span><span>Локация: школа</span><span>Дебют</span></div>
+      </article>
+      <article class="panel film-card">
+        <div><div class="card-tag">Психологический триллер / Хоррор</div><h3>Уборщик 2: Страшно вырубай</h3><p>История с ненадёжным восприятием реальности, тревожной атмосферой и неожиданным раскрытием. Фильм был снят на iPhone 17 за четыре часа.</p></div>
+        <div class="card-meta"><span>iPhone 17</span><span>4 часа съёмок</span><span>Школа / улица</span></div>
+      </article>
     </div>
-
-    <h2 style="font-size: 1.4rem;">Дилогия «Уборщик»</h2>
-    <div class="grid">
-      
-      <!-- Уборщик 1 -->
-      <div class="film-card">
-        <div>
-          <div class="tag">Слэшер // Мистика</div>
-          <h3>Уборщик</h3>
-          <p>
-            Дебютная работа студии. История парня, которого жестоко забили насмерть толпой. Но смерть не стала концом: вернувшись бестелесным мстительным призраком, он методично и хладнокровно уничтожает каждого своего обидчика.
-          </p>
-        </div>
-        <div class="film-meta-box">
-          <span class="film-badge">Redmi Note 10 Pro</span>
-          <span class="loc-tag">📍 Локация: Школа</span>
-        </div>
-      </div>
-
-      <!-- Уборщик 2 -->
-      <div class="film-card">
-        <div>
-          <div class="tag">Психологический триллер // Хоррор</div>
-          <h3>Уборщик 2: Страшно вырубай</h3>
-          <p>
-            Тот самый фильм про вред веществ. Главный герой просыпается, закидывается колёсами и натыкается на остывающий труп. Пытаясь скрыться от маньяка, он в итоге настигает его и срывает маску — под ней оказывается его собственное лицо. Поняв, что всё это время преследовал сам себя, он всаживает нож себе в живот.
-          </p>
-        </div>
-        <div class="film-meta-box">
-          <span class="film-badge">iPhone 17 // 4 часа</span>
-          <span class="loc-tag">📍 Локация: Школа и улица перед ней</span>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer>
-    <p>© 2026 DAMN INTERACTIVE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</p>
-    <a href="terminal.html" class="arg-trigger" title="access restricted">&gt;_</a>
-  </footer>
-
+  </section>
+</main>
+<footer class="site-footer container">
+  <span>© 2026 DAMN INTERACTIVE</span>
+  <span class="footer-right">INDEPENDENT FILM PRODUCTION / MADE WITH WHAT WE HAVE</span>
+</footer>
 </body>
 </html>
